@@ -2,7 +2,7 @@ function main_gesture_recognition()
     % DEMO - Rule-Based Static Gesture Recognition
     disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
 
-    folder = 'immagini fornite';  % Cartella immagini
+    folder = 'Immagini fornite';  % Cartella immagini
     files = dir(fullfile(folder, '*.png'));  % Puoi cambiare in *.jpg se serve
 
     if isempty(files)
