@@ -1,7 +1,7 @@
 function main_gesture_recognition()
     disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
 
-    folder = fullfile('C:', 'Users', 'leona', 'Documents', 'MATLAB', 'Approcci e sistemi', 'Problema1', 'Immagini fornite');
+    folder = uigetdir('C:\');
 
     if exist(folder, 'dir') ~= 7
         error('Cartella non trovata: %s', folder);
