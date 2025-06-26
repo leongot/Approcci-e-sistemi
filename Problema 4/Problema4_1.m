@@ -1,11 +1,32 @@
-syms s R L J h k
+% === Dichiarazione simbolica ===
+syms s R L k h J real
 
-% Polinomio caratteristico φ(s)
-phi = s^2 + (R/L + h/J)*s + (k^2 + R*h)/(L*J);
+% === Matrici del sistema ===
+A = [-R/L, -k/L;
+      k/J, -h/J];
 
-% Matrice numeratore
-N = [ (s + h/J)/L,    k/(L*J);
-       k/(L*J),     -(s + R/L)/J ];
+B = [1/L,    0;
+     0,   -1/J];
 
-% Matrice funzione di trasferimento
-G = simplify( (1/phi) * N );
+C = eye(2);          % C = I (uscite = stati)
+D = zeros(2);        % D = 0
+
+I = eye(2);          % Matrice identità
+
+% === Polinomio caratteristico φ(s) ===
+phi = simplify(det(s*I - A));
+disp('Polinomio caratteristico φ(s) = det(sI - A):');
+pretty(phi)
+
+% === Funzione di trasferimento matriciale ===
+G = simplify(C * inv(s*I - A) * B + D);
+
+disp('Matrice delle funzioni di trasferimento G(s):');
+pretty(G)
+
+% === Forma simbolica evidenziando il denominatore φ(s) ===
+% Calcolo il numeratore simbolico N(s) = φ(s) * G(s)
+N = simplify(phi * G);
+
+disp('Matrice numeratore N(s), tale che G(s) = N(s)/φ(s):');
+pretty(N)
