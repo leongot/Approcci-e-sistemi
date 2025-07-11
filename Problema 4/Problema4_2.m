@@ -28,7 +28,7 @@ disp('Poli:'), disp(pGa);
 disp('Costanti di tempo:'), disp(tau_Ga);
 
 %risposta allo scalino e grafico + scalino
-t = 0:0.001:0.5;
+t = [0:0.001:0.5];
 u = ones(size(t));  % scalino unitario
 
 % Risposte
@@ -58,6 +58,8 @@ yG_inf = yG(end);
 yGa0 = yGa(1);
 yGa_inf = yGa(end);
 
+%Per sistemi stabili, soggetti a ingressi costanti, il valore di regime coincide con il guadagno statico
+%Se il sistema è asintoticamente stabile, allora: Valore finale = Valore di regime
 disp(['Valore iniziale G(s): ', num2str(yG0)]);
 disp(['Valore finale G(s): ', num2str(yG_inf)]);
 
