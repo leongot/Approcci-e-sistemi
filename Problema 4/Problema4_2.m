@@ -1,7 +1,8 @@
 %calcolo guadagno, poli, zeri e costanti di tempo
+
 % Sistemi
-G = tf(1, conv([0.001 1], [0.012 1]));
-Ga = tf(1, [0.012 1]);
+G = tf(3.98, conv([0.0856 1], [0.0022 1]));
+Ga = tf(3.98, [0.0856 1]);
 
 % Guadagni (valore finale della risposta allo scalino)
 mu_G = dcgain(G);
