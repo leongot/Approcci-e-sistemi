@@ -45,10 +45,10 @@ function Problema5_4()
         isteresi_superiore = input('Inserisci la soglia di isteresi superiore: ');
         fprintf('Usati limiti da dati3.mat\n');
     else
-        soglia_inferiore = input('Inserisci la soglia inferiore per livello attezione basso: ');
-        isteresi_inferiore= input('Inserisci la soglia di isteresi inferiore: ');
-        soglia_superiore = input('Inserisci la soglia superiore per livello attenzione alto: ');
-        isteresi_superiore = input('Inserisci la soglia di isteresi superiore: ');
+        soglia_inferiore = input('Inserisci il livello di sicurezza basso: ');
+        isteresi_inferiore= input('Inserisci il livello di attenzione basso: ');
+        soglia_superiore = input('Inserisci il livello di sicurezza alto: ');
+        isteresi_superiore = input('Inserisci il livello di attenzione alto: ');
     end
 
     % Analisi valori fuori soglia
