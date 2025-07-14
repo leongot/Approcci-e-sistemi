@@ -1,4 +1,4 @@
-function rileva_allarmi_ROC_freezing()
+function Problema5_5()
     [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e var1');
     if isequal(file, 0)
         disp('Operazione annullata.');
