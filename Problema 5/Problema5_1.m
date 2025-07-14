@@ -1,6 +1,17 @@
 function Problema5_1()
-    % Caricamento dati
-    data = load('dati1.mat');
+    % Selezione file tramite interfaccia
+    [file, folder] = uigetfile('*.mat', 'Seleziona un file contenente time e matr1');
+    if isequal(file, 0)
+        disp('Operazione annullata dall''utente.');
+        return;
+    end
+
+    data = load(fullfile(folder, file));
+
+    if ~all(ismember({'time', 'matr1'}, fieldnames(data)))
+        error('Il file selezionato non contiene le variabili "time" e "matr1".');
+    end
+
     time = data.time;
     matr1 = data.matr1;
 
