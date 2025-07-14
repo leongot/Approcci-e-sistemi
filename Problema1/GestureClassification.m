@@ -1,5 +1,8 @@
 function gesture = GestureClassification(a, c, xp, img)
-    if a < (img.height * img.width)
+    
+    imgInfo = imfinfo(fullfile(img.name));
+
+    if a < (imgInfo.height * imgInfo.width)
         gesture = 'empty';
         return;
     end

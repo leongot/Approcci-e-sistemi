@@ -22,15 +22,15 @@ function main()
     % N = round(info.Height * 0.1);
     % soglia_area = 0.1 * N * (info.Width * 0.1);  % area soglia con dimensioni normalizzate
 
-    for i = 1:length(files)
-        filename = fullfile(folder, files(i).name);
+    for i = 1:length(images)
+        filename = fullfile(folder, images(i).name);
         img = imread(filename);
-        fprintf('\nAnalisi immagine: %s\n', files(i).name);
+        fprintf('\nAnalisi immagine: %s\n', images(i).name);
 
         % Estrazione feature
         [a, c, xp] = FeaturesExtraction(img);
 
-        if isempty(area)
+        if isempty(a)
             disp('Nessun oggetto rilevato.');
             continue;
         end
@@ -39,7 +39,7 @@ function main()
        
 
         % Classificazione gesti con regole corrette
-        gesture = GestureClassification(a, c, x, img);
+        gesture = GestureClassification(a, c, xp, img);
         fprintf('Gesto riconosciuto: %s\n', gesture);
     end
 end
