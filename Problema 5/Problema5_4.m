@@ -74,6 +74,10 @@ end
 
 %% --- Funzione per rilevare superamenti di soglia ---
 function rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superiore, isteresi_inferiore, isteresi_superiore)
+    attivazioni_sup = [];
+    disattivazioni_sup = [];
+    attivazioni_inf = [];
+    disattivazioni_inf = [];
     count = 0;
      allarme_superiore_ON = false;
      allarme_inferiore_ON = false;
@@ -84,20 +88,24 @@ function rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superior
         % Gestione allarme superiore con isteresi
         if ~allarme_superiore_ON && valore > soglia_superiore
             allarme_superiore_ON = true;
+             attivazioni_sup(end+1) = i;
             fprintf('\n+++ ALLARME SUPERIORE ATTIVATO! +++\nGiorno: %s \nValore: %.3f \nLimite sicurezza alto:%.3f \nIndex: %d\n',giorno, valore, soglia_superiore,i);
             count = count + 1;
         elseif allarme_superiore_ON && valore < isteresi_superiore
             allarme_superiore_ON = false;
+             disattivazioni_sup(end+1) = i;
             fprintf('\n--- ALLARME SUPERIORE DISATTIVATO! ----\nGiorno: %s \nValore: %.3f \nLimite attenzione alto: %.3f \nIndex: %d\n', giorno, valore, isteresi_superiore, i);
         end
 
         % Gestione allarme inferiore con isteresi
         if ~allarme_inferiore_ON && valore < soglia_inferiore
             allarme_inferiore_ON = true;
+            attivazioni_inf(end+1) = i;
             fprintf('\n+++ ALLARME INFERIORE ATTIVATO! +++ \nGiorno: %s \nValore: %.3f \nLimite sicurezza basso: %.3f \nIndex: %d \n', giorno, valore, soglia_inferiore,i);
             count = count + 1;
         elseif allarme_inferiore_ON && valore > isteresi_inferiore
             allarme_inferiore_ON = false;
+             disattivazioni_inf(end+1) = i;
             fprintf('\n--- ALLARME SUPERIORE DISATTIVATO! --- \nGiorno: %s \nValore: %.3f \nLimite attenzione basso: %.3f \nIndex: %d \n', giorno, valore, isteresi_inferiore,i);
         end
 
@@ -115,4 +123,28 @@ function rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superior
     else
         fprintf('\nTotale valori fuori soglia: %d\n', count);
     end
+    figure;
+    plot(time, var1, '-k'); hold on;
+    title('Andamento var1 e Allarmi');
+    xlabel('Tempo'); ylabel('Valore var1');
+    grid on;
+
+    % Linee soglie e isteresi
+    yline(soglia_superiore, '--r', 'Soglia Superiore');
+    yline(isteresi_superiore, ':r', 'Isteresi Sup');
+    yline(soglia_inferiore, '--b', 'Soglia Inferiore');
+    yline(isteresi_inferiore, ':b', 'Isteresi Inf');
+
+    % Punti di attivazione/disattivazione
+    plot(time(attivazioni_sup), var1(attivazioni_sup), 'ro', 'MarkerFaceColor', 'r');
+    plot(time(disattivazioni_sup), var1(disattivazioni_sup), 'go', 'MarkerFaceColor', 'g');
+    plot(time(attivazioni_inf), var1(attivazioni_inf), 'bo', 'MarkerFaceColor', 'b');
+    plot(time(disattivazioni_inf), var1(disattivazioni_inf), 'yo', 'MarkerFaceColor', 'y');
+
+    legend('var1', ...
+        'Soglia Sup', 'Isteresi Sup', ...
+        'Soglia Inf', 'Isteresi Inf', ...
+        'Attivazione Sup', 'Disattivazione Sup', ...
+        'Attivazione Inf', 'Disattivazione Inf', ...
+        'Location', 'best');
 end
