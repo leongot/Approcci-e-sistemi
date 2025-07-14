@@ -130,10 +130,10 @@ function rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superior
     grid on;
 
     % Linee soglie e isteresi
-    yline(soglia_superiore, '--r', 'Soglia Superiore');
-    yline(isteresi_superiore, ':r', 'Isteresi Sup');
-    yline(soglia_inferiore, '--b', 'Soglia Inferiore');
-    yline(isteresi_inferiore, ':b', 'Isteresi Inf');
+    yline(soglia_superiore, '--r', 'Limite sicurezza alto');
+    yline(isteresi_superiore, ':r', 'Limite attenzione alto');
+    yline(soglia_inferiore, '--b', 'Limite sicurezza basso');
+    yline(isteresi_inferiore, ':b', 'Limite attenzione basso');
 
     % Punti di attivazione/disattivazione
     plot(time(attivazioni_sup), var1(attivazioni_sup), 'ro', 'MarkerFaceColor', 'r');
