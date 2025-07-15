@@ -15,8 +15,8 @@ nome_file = input('\nInserisci il nome del file da utilizzare (es. dati3): ', 's
  giorni = unique(dateshift(time,'start','day'));
  num_giorni = numel(giorni);
  avg_temp = NaN(num_giorni,24);
- min_value = input('Inserisci valore minimo accettabile');
- max_value = input('Inserisci valore massimo accettabile');
+ min_value = input('Inserisci valore minimo temperatura accettabile: ');
+ max_value = input('Inserisci valore massimo temperatura accettabile: ');
  delta_t = seconds(diff(time));
  passo_regolare = [true; delta_t == 60];
  temp_var = diff(temp);
@@ -31,6 +31,9 @@ valid_velocity = [true; var_velocity < lim_pos & var_velocity > lim_neg];
 valid_values = ~isnan(temp) & ~isnat(time) & temp > min_value & temp < max_value...
                           & passo_regolare & valid_velocity & not_freezing;
 
+fprintf('Totale dati: %d\n', numel(temp));
+fprintf('Dati validi: %d\n', sum(valid_values));
+fprintf('Percentuale validi: %.2f%%\n', 100 * sum(valid_values)/numel(temp));
 
 for g = 1:num_giorni
 
@@ -44,7 +47,7 @@ for g = 1:num_giorni
             % se ci sono dati validi, calcola la media
 
             if any(indici_finali)
-                avg_temp(g, h+1) = mean(temp(indici_finali));  % h+1 perché indice MATLAB parte da 1
+                avg_temp(g, h+1) = round(mean(temp(indici_finali)),2);  % h+1 perché indice MATLAB parte da 1
             end
 
    end
@@ -55,13 +58,17 @@ tabella_risultati = array2table(avg_temp, 'RowNames', giorni_str, ...
     'VariableNames', strcat("h", string(0:23)));
 disp(tabella_risultati);
 figure;
-imagesc(avg_temp);
-colorbar;
-colormap(jet);
-xlabel('Ora del giorno');
-ylabel('Giorni');
+heatmap( ...
+    string(giorni), ...               % Giorni sull'asse X
+    string(0:23), ...                 % Ore sull'asse Y
+    round(avg_temp', 2), ...          % Trasposizione + arrotondamento a 2 decimali
+    'Colormap', parula, ...
+    'ColorLimits', [min(avg_temp(:)), max(avg_temp(:))], ...
+    'MissingDataColor', [1 1 1], ...  % Colore bianco per i NaN
+    'MissingDataLabel', 'Dati mancanti');
+
 title('Temperatura media oraria');
-xticks(1:24); xticklabels(0:23);
-yticks(1:num_giorni); yticklabels(giorni_str);
+xlabel('Giorno');
+ylabel('Ora del giorno');
 
 end
