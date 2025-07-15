@@ -26,8 +26,8 @@ function Problema5_8()
     % Chiedi se usare soglie personalizzate
     usa_custom = input('Vuoi inserire soglie personalizzate? (s/n): ', 's');
     if strcmpi(usa_custom, 's')
-        soglia_roc = input('Inserisci soglia per salti anomali (ROC), es. 5: ');
-        soglia_freezing = input('Inserisci soglia per freezing, es. 1e-3: ');
+        soglia_roc = input('Inserisci soglia per salti anomali (ROC) (es: 5): ');
+        soglia_freezing = input('Inserisci soglia per freezing (es: 0.001): ');
     else
         soglia_roc = 5;
         soglia_freezing = 1e-3;
@@ -50,15 +50,15 @@ function Problema5_8()
     disp(T);
 
     % Segnalazioni testuali
-    fprintf('\n--- SEGNALAZIONI ---\n');
+    fprintf('\n--- SEGNALAZIONI ---');
     if any(idx_nan)
-        fprintf('%d righe con almeno un NaN rilevate in matr1 (evidenziate nel grafico).', sum(idx_nan));
+        fprintf('\n%d righe con almeno un NaN rilevate in matr1 (evidenziate nel grafico tramite croci rosse).', sum(idx_nan));
     end
     if any(idx_roc)
-        fprintf('%d salti anomali rilevati (>|%.2f| °C).', sum(idx_roc), soglia_roc);
+        fprintf('\n%d salti anomali rilevati (>|%.2f| °C, evidenziati tramite quadrati arancioni).', sum(idx_roc), soglia_roc);
     end
     if any(idx_freezing_blocchi)
-        fprintf('%d freezing rilevati (media invariata per almeno 2 istanti).', sum(idx_freezing_blocchi));
+        fprintf('\n%d freezing rilevati (media invariata per almeno 2 istanti, evidenziati da cerchi blu).', sum(idx_freezing_blocchi));
     end
     if ~any(idx_nan | idx_roc | idx_freezing_blocchi)
         fprintf('Nessuna anomalia rilevata.');
