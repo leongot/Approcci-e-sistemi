@@ -25,26 +25,26 @@ function Problema5_6()
 
     freezingLimit = input('Inserire il limite per allarme di freezing: ');
 
-    alarms = strings(length(ROC), 1);
+    warnings = strings(length(ROC), 1);
 
     for i = 1:length(ROC)
         currROC = ROC(i);
         if currROC < freezingLimit
-            alarms(i) = "Freezing";
+            warnings(i) = "Freezing";
         else 
-            alarms(i) = "";
+            warnings(i) = "";
         end
     end
 
-    alarmsIdx = find(alarms ~= "");
+    warningsId = find(warnings ~= "");
 
-    if isempty(alarmsIdx)
+    if isempty(warningsId)
         disp('Nessum allarme rilevato.')
     else
         T = table( ...
-            alarmsIdx, ...
-            time(alarmsIdx), ...
-            alarms(alarmsIdx), ...
+            warningsId, ...
+            time(warningsId), ...
+            warnings(warningsId), ...
             'VariableNames' , {'Indice', 'Timestamp', 'Allarme'} ...
         );
         disp('Eventi freezing rilevati:');
