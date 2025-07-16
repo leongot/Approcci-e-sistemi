@@ -76,7 +76,7 @@ function Problema5_5()
         
         d3_var1 = data3.var1;
        
-        d3_dv = diff(d3_var1);
+    d3_dv = diff(d3_var1);
 
         d3_dmax = max(d3_dv);
         d3_dmin = min(d3_dv);

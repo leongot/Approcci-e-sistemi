@@ -1,9 +1,18 @@
 function Problema5_4()
-    %% --- PARTE 1: Caricamento dati3.mat e calcolo min/max ---
-    nome_file_dati3 = 'dati3.mat';
+    %% --- PARTE 1: Selezione file da analizzare ---
+    fprintf('\nSeleziona il file da analizzare (es. dati5.mat o dati3.mat)\n');
+    [file, path] = uigetfile('*.mat', 'Seleziona un file contenente var1 e time');
+    if isequal(file, 0)
+        disp('Operazione annullata. Uscita dalla funzione.');
+        return;
+    end
 
+    nome_file = fullfile(path, file);
+    nome_file_dati3 = fullfile(path, 'dati3.mat');  % cerca dati3.mat nella stessa cartella
+
+    %% --- PARTE 2: Caricamento dati3.mat e calcolo min/max ---
     try
-         [var1_dati3, ~] = carica_var1(nome_file_dati3);
+        [var1_dati3, ~] = carica_var1(nome_file_dati3);
     catch ME
         fprintf('Errore nel caricamento di dati3.mat: %s\n', ME.message);
         return;
@@ -18,45 +27,61 @@ function Problema5_4()
     fprintf('Valore minimo di var1: %.3f\n', limite_min);
     fprintf('Valore massimo di var1: %.3f\n', limite_max);
 
-    %% --- PARTE 2: Analisi altro file ---
-    nome_file = input('\nInserisci il nome del file da analizzare (es. dati5 o dati3): ', 's');
-
-    % Aggiungi estensione .mat se mancante
-    if ~endsWith(nome_file, '.mat')
-        nome_file = [nome_file '.mat'];
-    end
-
-    % Caricamento secondo file
+    %% --- PARTE 3: Caricamento file selezionato ---
     try
-          [var1, time] = carica_var1(nome_file);
+        [var1, time] = carica_var1(nome_file);
     catch ME
         fprintf('Errore nel caricamento di %s: %s\n', nome_file, ME.message);
         return;
     end
 
-    % Chiedi se usare i limiti da dati3.mat o inserire manualmente
+    %% --- PARTE 4: Inserimento soglie ---
     scelta = input(['Vuoi usare i limiti calcolati da dati3.mat ' ...
-                    '(min: '  num2str(limite_min) ', max: '  num2str(limite_max) ')? (s/n): '], 's');
+        '(min: ' num2str(limite_min) ', max: ' num2str(limite_max) ')? (s/n): '], 's');
 
     if strcmpi(scelta, 's')
         soglia_inferiore = limite_min;
         soglia_superiore = limite_max;
-        isteresi_inferiore= input('Inserisci la soglia di isteresi inferiore: ');
-        isteresi_superiore = input('Inserisci la soglia di isteresi superiore: ');
-        fprintf('Usati limiti da dati3.mat\n');
+
+        while true
+            isteresi_inferiore = input('Inserisci la soglia di isteresi inferiore: ');
+            isteresi_superiore = input('Inserisci la soglia di isteresi superiore: ');
+
+            if soglia_inferiore < isteresi_inferiore && soglia_superiore > isteresi_superiore
+                fprintf('Soglie coerenti. Usati limiti da dati3.mat\n');
+                break;
+            else
+                fprintf('Soglie incoerenti: assicurati che\n');
+                fprintf('- soglia_inferiore < isteresi_inferiore\n');
+                fprintf('- soglia_superiore > isteresi_superiore\n');
+                fprintf('Riprova.\n\n');
+            end
+        end
     else
-        soglia_inferiore = input('Inserisci il livello di sicurezza basso: ');
-        isteresi_inferiore= input('Inserisci il livello di attenzione basso: ');
-        soglia_superiore = input('Inserisci il livello di sicurezza alto: ');
-        isteresi_superiore = input('Inserisci il livello di attenzione alto: ');
+        while true
+            soglia_inferiore = input('Inserisci il livello di sicurezza basso: ');
+            isteresi_inferiore = input('Inserisci il livello di attenzione basso: ');
+            soglia_superiore = input('Inserisci il livello di sicurezza alto: ');
+            isteresi_superiore = input('Inserisci il livello di attenzione alto: ');
+
+            if soglia_inferiore < isteresi_inferiore && soglia_superiore > isteresi_superiore
+                fprintf('Soglie coerenti.\n');
+                break;
+            else
+                fprintf('Soglie incoerenti: assicurati che\n');
+                fprintf('- soglia_inferiore < isteresi_inferiore\n');
+                fprintf('- soglia_superiore > isteresi_superiore\n');
+                fprintf('Riprova.\n\n');
+            end
+        end
     end
 
-    % Analisi valori fuori soglia
+    %% --- PARTE 5: Analisi valori fuori soglia ---
     fprintf('\n=== Rilevamento valori fuori soglia in %s ===\n', nome_file);
     rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superiore, isteresi_inferiore, isteresi_superiore);
 end
 
-%% --- Funzione per caricare var1 con controlli ---
+%% --- Funzione per caricare var1 e time ---
 function [var1, time] = carica_var1(nome_file)
     if ~isfile(nome_file)
         error('Il file %s non esiste.', nome_file);
@@ -72,70 +97,64 @@ function [var1, time] = carica_var1(nome_file)
     time = data.time;
 end
 
-%% --- Funzione per rilevare superamenti di soglia ---
-function rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superiore, isteresi_inferiore, isteresi_superiore)
+%% --- Funzione per rilevare superamenti di soglia con isteresi ---
+function rileva_superamento_limiti(var1, time, soglia_inf, soglia_sup, isteresi_inf, isteresi_sup)
     attivazioni_sup = [];
     disattivazioni_sup = [];
     attivazioni_inf = [];
     disattivazioni_inf = [];
     count = 0;
-     allarme_superiore_ON = false;
-     allarme_inferiore_ON = false;
+
+    allarme_sup = false;
+    allarme_inf = false;
+
     for i = 1:length(var1)
         giorno = datetime(time(i));
         valore = var1(i);
 
-        % Gestione allarme superiore con isteresi
-        if ~allarme_superiore_ON && valore > soglia_superiore
-            allarme_superiore_ON = true;
-             attivazioni_sup(end+1) = i;
-            fprintf('\n+++ ALLARME SUPERIORE ATTIVATO! +++\nGiorno: %s \nValore: %.3f \nLimite sicurezza alto:%.3f \nIndex: %d\n',giorno, valore, soglia_superiore,i);
+        % Allarme superiore
+        if ~allarme_sup && valore > soglia_sup
+            allarme_sup = true;
+            attivazioni_sup(end+1) = i;
+            fprintf('\n+++ ALLARME SUPERIORE ATTIVATO! +++\nGiorno: %s \nValore: %.3f \n', giorno, valore);
             count = count + 1;
-        elseif allarme_superiore_ON && valore < isteresi_superiore
-            allarme_superiore_ON = false;
-             disattivazioni_sup(end+1) = i;
-            fprintf('\n--- ALLARME SUPERIORE DISATTIVATO! ----\nGiorno: %s \nValore: %.3f \nLimite attenzione alto: %.3f \nIndex: %d\n', giorno, valore, isteresi_superiore, i);
+        elseif allarme_sup && valore < isteresi_sup
+            allarme_sup = false;
+            disattivazioni_sup(end+1) = i;
+            fprintf('\n--- ALLARME SUPERIORE DISATTIVATO! ---\nGiorno: %s \nValore: %.3f \n', giorno, valore);
         end
 
-        % Gestione allarme inferiore con isteresi
-        if ~allarme_inferiore_ON && valore < soglia_inferiore
-            allarme_inferiore_ON = true;
+        % Allarme inferiore
+        if ~allarme_inf && valore < soglia_inf
+            allarme_inf = true;
             attivazioni_inf(end+1) = i;
-            fprintf('\n+++ ALLARME INFERIORE ATTIVATO! +++ \nGiorno: %s \nValore: %.3f \nLimite sicurezza basso: %.3f \nIndex: %d \n', giorno, valore, soglia_inferiore,i);
+            fprintf('\n+++ ALLARME INFERIORE ATTIVATO! +++\nGiorno: %s \nValore: %.3f \n', giorno, valore);
             count = count + 1;
-        elseif allarme_inferiore_ON && valore > isteresi_inferiore
-            allarme_inferiore_ON = false;
-             disattivazioni_inf(end+1) = i;
-            fprintf('\n--- ALLARME SUPERIORE DISATTIVATO! --- \nGiorno: %s \nValore: %.3f \nLimite attenzione basso: %.3f \nIndex: %d \n', giorno, valore, isteresi_inferiore,i);
-        end
-
-        if allarme_superiore_ON
-            fprintf('\nALLARME SUPERIORE ATTIVO: \nValore: %.3f \nGiorno: %s \nLimite sicurezza alto: %.3f \nLimite attenzione alto: %.3f \nIndex: %d\n', valore, giorno, soglia_superiore, isteresi_superiore, i);
-        end
-
-        if allarme_inferiore_ON
-            fprintf('\nALLARME INFERIORE ATTIVO: \nValore: %.3f \nGiorno: %s \nLimite sicurezza basso: %.3f \nLimite attenzione basso: %.3f \nIndex: %d\n', valore, giorno, soglia_inferiore, isteresi_inferiore, i);
+        elseif allarme_inf && valore > isteresi_inf
+            allarme_inf = false;
+            disattivazioni_inf(end+1) = i;
+            fprintf('\n--- ALLARME INFERIORE DISATTIVATO! ---\nGiorno: %s \nValore: %.3f \n', giorno, valore);
         end
     end
 
     if count == 0
-        fprintf('Nessun valore fuori soglia.\n');
+        fprintf('\nNessun valore fuori soglia rilevato.\n');
     else
-        fprintf('\nTotale valori fuori soglia: %d\n', count);
+        fprintf('\nTotale allarmi rilevati: %d\n', count);
     end
+
+    % --- Plot ---
     figure;
     plot(time, var1, '-k'); hold on;
     title('Andamento var1 e Allarmi');
     xlabel('Tempo'); ylabel('Valore var1');
     grid on;
 
-    % Linee soglie e isteresi
-    yline(soglia_superiore, '--r', 'Limite sicurezza alto');
-    yline(isteresi_superiore, ':r', 'Limite attenzione alto');
-    yline(soglia_inferiore, '--b', 'Limite sicurezza basso');
-    yline(isteresi_inferiore, ':b', 'Limite attenzione basso');
+    yline(soglia_sup, '--r', 'Soglia Sup');
+    yline(isteresi_sup, ':r', 'Isteresi Sup');
+    yline(soglia_inf, '--b', 'Soglia Inf');
+    yline(isteresi_inf, ':b', 'Isteresi Inf');
 
-    % Punti di attivazione/disattivazione
     plot(time(attivazioni_sup), var1(attivazioni_sup), 'ro', 'MarkerFaceColor', 'r');
     plot(time(disattivazioni_sup), var1(disattivazioni_sup), 'go', 'MarkerFaceColor', 'g');
     plot(time(attivazioni_inf), var1(attivazioni_inf), 'bo', 'MarkerFaceColor', 'b');
