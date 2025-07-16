@@ -73,6 +73,7 @@ function Problema5_1()
         end
 
         cols_num = str2num(cols); %#ok<ST2NM>
+        cols_num = sort(cols_num);
         if isempty(cols_num) || any(cols_num < 1) || any(cols_num > size(matr1,2))
             cols = input('Vettore non valido. Inserisci di nuovo (es. [1 3] oppure "leave"): ', 's');
         else

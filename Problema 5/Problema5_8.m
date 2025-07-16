@@ -44,10 +44,34 @@ function Problema5_8()
     idx_freeze(isnan(delta_media)) = false;
     idx_freezing_blocchi = [false; (idx_freeze(1:end-1) & idx_freeze(2:end))];
 
-    % Tabella risultati
-    T = table(time, media_istantanea, 'VariableNames', {'Timestamp', 'Media_Temp'});
-    disp('Temperatura media istantanea (aritmetica):');
+    % Colonna flag anomalie
+    Anomalia = strings(size(time));
+    
+    for i = 1:length(time)
+        flag = [];
+        if idx_nan(i)
+            flag = [flag, "NaN"];
+        end
+        if idx_roc(i)
+            flag = [flag, "Salto"];
+        end
+        if idx_freezing_blocchi(i)
+            flag = [flag, "Freezing"];
+        end
+        if isempty(flag)
+            Anomalia(i) = "";
+        else
+            Anomalia(i) = strjoin(flag, ' + ');
+        end
+    end
+    
+    % Tabella risultati con colonna "Anomalia"
+    T = table(time, media_istantanea, Anomalia, ...
+        'VariableNames', {'Timestamp', 'Media_Temp', 'Anomalia'});
+    
+    disp('Temperatura media istantanea (aritmetica) con anomalie:');
     disp(T);
+
 
     % Segnalazioni testuali
     fprintf('\n--- SEGNALAZIONI ---');
