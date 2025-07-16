@@ -10,6 +10,7 @@ function Problema5_7()
      end
 
      data = load(fullfile(folder, file));
+
      if ~isfield(data, 'time') || ~isfield(data, 'var1')
         error('Il file deve contenere le variabili "time" e "var1".');
      end
@@ -134,9 +135,7 @@ function Problema5_7()
         %}
 end
 
-function val = GetCorrectInput(maxVal, minVal, inPrompt)
-    val = 0;
-    prompt = inPrompt;
+function val = GetCorrectInput(maxVal, minVal, prompt)
     while true
         val = input(prompt);
 
