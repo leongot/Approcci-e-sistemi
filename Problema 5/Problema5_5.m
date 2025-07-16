@@ -18,11 +18,10 @@ function Problema5_5()
     dt = seconds(diff(time));      % tempo in secondi
     dv = diff(var1);               % variazione var1
     ROC = dv ./ dt;           % velocità di variazione
-    
 
     % Chiedi limiti all’utente
-    positiveLim = input('Inserisci limite positivo ROC (es. 0.5 °C/s): ');
-    negativeLim = input('Inserisci limite negativo ROC (es. -0.5 °C/s): ');
+    ROCPositiveLim = input('Inserisci limite positivo ROC (es. 0.5 °C/s): ');
+    ROCNegativeLim = input('Inserisci limite negativo ROC (es. -0.5 °C/s): ');
     %limite_freezing = input('Inserisci limite minimo per allarme di freezing (es. 0.01 °C/s): ');
 
     % Inizializzazione classificazione
@@ -32,9 +31,9 @@ function Problema5_5()
         currROC = ROC(i);
         if isnan(currROC) || ~isfinite(currROC)
             warnings(i) = "Dato non valido";
-        elseif currROC > positiveLim
+        elseif currROC > ROCPositiveLim
             warnings(i) = "ROC positivo";
-        elseif currROC < negativeLim
+        elseif currROC < ROCNegativeLim
             warnings(i) = "ROC negativo";
         else
             warnings(i) = "";
