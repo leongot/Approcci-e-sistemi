@@ -1,8 +1,8 @@
 function main()
-    disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
+    %disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
     
     % L'utente deve selezione la cartella dove sono contenute le immagini
-    folder = uigetdir('C:\');
+    folder = uigetdir('*.png', 'Selezionare la cartella di immagini da analizzare');
     
     % Controlla se il path assegnato e' valido
     if exist(folder, 'dir') ~= 7
@@ -35,11 +35,14 @@ function main()
             continue;
         end
 
-        fprintf('Area=%d, Compat=%.2f, Protrusion_ratio=%.2f\n', a, c, xp);
-       
+        fprintf('Area = %d\n Compatezza = %.2f\n Sporgenza = %.2f\n', a, c, xp);
+        
+        % Calcola la dimensione dell'immagine
+        [row, cols] = size(img);
+        imgDim = row * cols; 
 
         % Classificazione gesti con regole corrette
-        gesture = GestureClassification(a, c, xp, img);
+        gesture = GestureClassification(a, c, xp, imgDim);
         fprintf('Gesto riconosciuto: %s\n', gesture);
     end
 end
