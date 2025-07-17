@@ -32,7 +32,9 @@ function main()
             disp('Nessun oggetto rilevato.');
             continue;
         end
-
+        
+        % TODO: matlab estrae l'area come uno scalare, capire cosa
+        % rappresenta
         fprintf('Area = %d\nCompatezza = %.2f\nSporgenza = %.2f\n', a, c, xp);
         
         % Classificazione gesti con regole corrette
