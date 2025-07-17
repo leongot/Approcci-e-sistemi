@@ -21,7 +21,7 @@ function Problema5_6()
 
     for i = 1:length(ROC)
         currROC = ROC(i);
-        if currROC < freezingLimit
+        if abs(currROC) < freezingLimit
             warnings(i) = "Freezing";
         end
     end
@@ -39,10 +39,20 @@ function Problema5_6()
     % Grafico
     figure;
     plot(time(2:end), ROC, '-k'); hold on;
-    plot(time(warningsId), ROC(warningsId - 1), 'bo', 'MarkerFaceColor', 'b');
+    
+    % Segnalo freezing rilevati
+    plot(time(warningsId + 1), ROC(warningsId), 'bo', 'MarkerFaceColor', 'b');
+    
+    % Aggiungo linee di riferimento per i limiti freezing
+    yline(freezingLimit, '--r', 'Limite Freezing (+)');
+    yline(-freezingLimit, '--r', 'Limite Freezing (-)');
+    
     xlabel('Tempo'); ylabel('ROC [°C/s]');
-    title('Rate of Change e Freezing'); grid on;
-    legend('ROC', 'Freezing rilevati');
+    title('Rate of Change e Freezing'); 
+    grid on;
+    legend('ROC', 'Freezing rilevati', 'Limiti freezing');
+
+
 
     % Test anche con dati3.mat
     try
