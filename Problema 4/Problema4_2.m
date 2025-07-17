@@ -18,17 +18,28 @@ tau_Ga = -1 ./ real(pGa);
 
 % Output
 disp('Sistema G(s):');
+fprintf('Guadagno: %.4f\n', mu_G);
+fprintf('Poli: %.4f\n', pG);
+fprintf('Costanti di tempo: %.4f\n', tau_G);
+%{
 disp(['Guadagno: ', num2str(mu_G)]);
 disp('Poli:'), disp(pG);
 disp('Costanti di tempo:'), disp(tau_G);
+%}
 
+fprintf('\n');
 disp('Sistema Ga(s):');
+%{
 disp(['Guadagno: ', num2str(mu_Ga)]);
 disp('Poli:'), disp(pGa);
 disp('Costanti di tempo:'), disp(tau_Ga);
+%}
+fprintf('Guadagno: %.4f\n', mu_Ga);
+fprintf('Poli: %.4f\n', pGa);
+fprintf('Costanti di tempo: %.4f\n', tau_Ga);
 
 %risposta allo scalino e grafico + scalino
-t = [0:0.001:0.5];
+t = 0:0.001:0.5;
 u = ones(size(t));  % scalino unitario
 
 % Risposte
@@ -60,11 +71,23 @@ yGa_inf = yGa(end);
 
 %Per sistemi stabili, soggetti a ingressi costanti, il valore di regime coincide con il guadagno statico
 %Se il sistema è asintoticamente stabile, allora: Valore finale = Valore di regime
+fprintf('\n');
+disp('Valori finali e iniziali');
+fprintf('Valore iniziale G(s): %.4f\n', yG0);
+fprintf('Valore iniziale G(s): %.4f\n', yG_inf);
+fprintf('\n');
+
+fprintf('Valore iniziale G(s): %.4f\n', yGa0);
+fprintf('Valore iniziale G(s): %.4f\n', yGa_inf);
+%{
 disp(['Valore iniziale G(s): ', num2str(yG0)]);
 disp(['Valore finale G(s): ', num2str(yG_inf)]);
+%}
 
+%{
 disp(['Valore iniziale Ga(s): ', num2str(yGa0)]);
 disp(['Valore finale Ga(s): ', num2str(yGa_inf)]);
+%}
 
 %indicare valore iniziale su grafico
 figure;
@@ -91,6 +114,7 @@ grid on;
 
 % tempo salita Ts per Ga(s)
 Ts_Ga = 2.2 * tau_Ga;
-disp(['Tempo di salita Ts per Ga(s): ', num2str(Ts_Ga), ' s']);
-
+fprintf('\n');
+% disp(['Tempo di salita Ts per Ga(s): ', num2str(Ts_Ga), ' s']);
+fprintf('Tempo di salita Ts per Ga(s): %.4f\n', Ts_Ga);
 
