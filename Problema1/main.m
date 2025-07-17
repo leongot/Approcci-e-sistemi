@@ -16,31 +16,25 @@ function main()
         disp('Nessun file png trovato.');
         return; 
     end
-
-    % Legge le dimensioni della prima immagine come riferimento per la normalizzazione per normalizzazione (10%)
-    % info = imfinfo(fullfile(folder, image(1).name));
-    % N = round(info.Height * 0.1);
-    % soglia_area = 0.1 * N * (info.Width * 0.1);  % area soglia con dimensioni normalizzate
-
+    
     for i = 1:length(images)
         filename = fullfile(folder, images(i).name);
         img = imread(filename);
+        imgInfo = imfinfo(filename);
+        imgDim = imgInfo.Width * imgInfo.Height;
+
         fprintf('\nAnalisi immagine: %s\n', images(i).name);
 
         % Estrazione feature
         [a, c, xp] = FeaturesExtraction(img);
-
+        
         if isempty(a)
             disp('Nessun oggetto rilevato.');
             continue;
         end
 
-        fprintf('Area = %d\n Compatezza = %.2f\n Sporgenza = %.2f\n', a, c, xp);
+        fprintf('Area = %d\nCompatezza = %.2f\nSporgenza = %.2f\n', a, c, xp);
         
-        % Calcola la dimensione dell'immagine
-        [row, cols] = size(img);
-        imgDim = row * cols; 
-
         % Classificazione gesti con regole corrette
         gesture = GestureClassification(a, c, xp, imgDim);
         fprintf('Gesto riconosciuto: %s\n', gesture);

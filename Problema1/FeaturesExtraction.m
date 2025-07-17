@@ -26,9 +26,9 @@ function [a, c, xp] = FeaturesExtraction(img)
     stats = regionprops(bwImg, 'Area', 'Perimeter', 'BoundingBox', 'Centroid', 'PixelList');
 
     if isempty(stats)
-        a   = [];
-        c   = [];
-        xp  = [];
+        a   = 0;
+        c   = 0;
+        xp  = 0;
         return;
     end
 
@@ -36,9 +36,9 @@ function [a, c, xp] = FeaturesExtraction(img)
     p = stats.Perimeter;
 
     if p == 0
-        a   = [];
-        c   = [];
-        xp  = [];
+        a   = 0;
+        c   = 0;
+        xp  = 0;
         return;
     end
 
