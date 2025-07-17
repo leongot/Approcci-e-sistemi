@@ -9,21 +9,24 @@ function main_gesture_recognition()
 
     files = dir(fullfile(folder, '*.png'));
     if isempty(files)
-        disp('Nessun file png trovato.');
+        disp('Nessun file PNG trovato.');
         return;
     end
-
-    % Leggi dimensioni immagine originale per normalizzazione (10%)
-    info = imfinfo(fullfile(folder, files(1).name));
-    N = round(info.Height * 0.1);
-    soglia_area = 0.1 * N * (info.Width * 0.1);  % area soglia con dimensioni normalizzate
 
     for i = 1:length(files)
         filename = fullfile(folder, files(i).name);
         img = imread(filename);
         fprintf('\nAnalisi immagine: %s\n', files(i).name);
 
-        % Estrazione feature
+        % Calcola N per questa immagine (10% dell'altezza originale)
+        N = round(size(img, 1) * 0.1);
+
+        % Ridimensiona l'immagine per calcolare la soglia
+        img_resized = imresize(img, [N NaN]);         % ridimensiona in altezza a N, mantieni proporzioni
+        [~, new_width] = size(rgb2gray(img_resized)); % larghezza dell'immagine ridotta (in scala di grigi)
+        soglia_area = 0.1 * N * new_width;            % calcolo soglia area
+
+        % Estrai le feature usando immagine originale ma ridimensionata internamente
         [area, compat, x_p] = estrai_feature(img, N);
 
         if isempty(area)
@@ -31,34 +34,35 @@ function main_gesture_recognition()
             continue;
         end
 
-        fprintf('Area=%d, Compat=%.2f, Protrusion_ratio=%.2f\n', area, compat, x_p);
+        fprintf('Area = %d, Compat = %.2f, Protrusion_ratio = %.2f\n', area, compat, x_p);
 
-        % Classificazione gesti con regole corrette
+        % Classifica gesto
         gesto = classifica_gesto(area, compat, x_p, soglia_area);
         fprintf('Gesto riconosciuto: %s\n', gesto);
     end
 end
 
 function [area, compat, x_p] = estrai_feature(img, N)
-    % Ridimensiona mantenendo proporzioni, altezza a N pixel
+    % Ridimensiona immagine per elaborazione
     img = imresize(img, [N NaN]);
 
-    if size(img,3) == 3
+    % Converti in grayscale se RGB
+    if size(img, 3) == 3
         img = rgb2gray(img);
     end
 
-    % Binarizzazione e inversione se necessario
+    % Binarizzazione
     bw = imbinarize(img);
     if mean(bw(:)) > 0.5
         bw = ~bw;
     end
 
-    % Pulizia immagine (apertura e riempimento)
+    % Pulizia morfologica
     bw = imopen(bw, strel('disk', 3));
     bw = imfill(bw, 'holes');
-    bw = bwareafilt(bw, 1); % Oggetto più grande
+    bw = bwareafilt(bw, 1); % Prendi l'oggetto più grande
 
-    stats = regionprops(bw, 'Area', 'Perimeter', 'BoundingBox', 'Centroid', 'PixelList');
+    stats = regionprops(bw, 'Area', 'Perimeter', 'Centroid', 'PixelList');
 
     if isempty(stats)
         area = [];
@@ -77,21 +81,18 @@ function [area, compat, x_p] = estrai_feature(img, N)
         return;
     end
 
-    % Compattezza: 4*pi*area / perimetro^2
+    % Compattezza
     compat = 4 * pi * area / (per^2);
 
-    % Calcolo protrusion ratio come da formula
-    pixel_list = stats.PixelList; % lista dei pixel dell'oggetto (Nx2: colonne x,y)
-    x_coords = pixel_list(:,1);
-
+    % Protrusion ratio
+    x_coords = stats.PixelList(:,1);
     x_min = min(x_coords);
     x_max = max(x_coords);
     x_cog = stats.Centroid(1);
 
-    % Protezione contro divisioni per zero
     denom = x_cog - x_min;
     if denom == 0
-        x_p = Inf;  % o altro valore arbitrario grande
+        x_p = Inf;
     else
         x_p = (x_max - x_cog) / denom;
     end
@@ -103,7 +104,6 @@ function gesto = classifica_gesto(area, compat, x_p, soglia_area)
         return;
     end
 
-    % Regole esatte fornite:
     if compat < 0.25
         gesto = 'stop';
     elseif x_p > 1.2
