@@ -62,6 +62,11 @@ function Problema5_1()
     idx = time >= t_start & time <= t_end;
     time_selected = time(idx);
 
+    if isempty(time_selected)
+        disp('Nessun dato disponibile nell''intervallo selezionato.');
+        return;
+    end
+
     % Scelta colonne
     fprintf('Sono disponibili %d sensori (colonne da 1 a %d).\n', size(matr1,2), size(matr1,2));
     cols = input('Inserisci le colonne da visualizzare (es. [1 3] oppure "leave" per uscire): ', 's');
