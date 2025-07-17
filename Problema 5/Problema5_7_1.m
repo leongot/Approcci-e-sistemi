@@ -93,12 +93,14 @@ function Problema5_7_1()
             end
         end
     end
+%tabella command line
 
-    giorni_str = string(giorni);
-    tabella_risultati = array2table(avg_temp, 'RowNames', giorni_str, ...
-        'VariableNames', strcat("h", string(0:23)));
-    disp(tabella_risultati);
+   giorni_str = string(giorni);
+tabella_risultati = array2table(avg_temp, 'RowNames', giorni_str, ...
+    'VariableNames', strcat("h", string(0:23)));
+disp(tabella_risultati);
 
+    %heatmap
     figure;
     heatmap( ...
         string(giorni), ...
