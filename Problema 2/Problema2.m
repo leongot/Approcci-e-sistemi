@@ -1,4 +1,5 @@
 function Problema2()
+    %% Inizializzazione
     % Nomi delle classi
     classNames = {'Anger','Disgust','Fear','Happiness','Sadness','Surprise'};
     numClass = length(classNames);
@@ -31,8 +32,9 @@ function Problema2()
         % Matrice con risultati perferfetti
         diag([50 50 25 65 50 48])
     };
+    
 
-    % Analisi di ogni matrice
+    %% Analisi di ogni matrice
     for m = 1:length(matrices)
         confusionMatrix = matrices{m};
 
@@ -55,14 +57,14 @@ function Problema2()
         % Calcolo del tasso medio
         averageAccuracy = mean(accuracies);
 
-        % Visualizzazione risultati
+        %% Visualizzazione risultati
         fprintf('\nTassi di riconoscimento per classe:\n');
         for ri = 1:numClass
             fprintf('%-10s: %.1f%%\n', classNames{ri}, accuracies(ri));
         end
         fprintf('Tasso medio di riconoscimento: %.1f%%\n', averageAccuracy);
-
-        % Visualizzazione heatmap
+        
+        % Visualizzazione dei dati
         figure('Name', sprintf('Matrice %c', 'A' + (m - 1)));
         imagesc(confusionMatrix);
         colormap('hot');
