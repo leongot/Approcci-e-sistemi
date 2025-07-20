@@ -16,6 +16,7 @@ mu_Ga = dcgain(Ga);
 tau_G = -1 ./ real(pG);
 tau_Ga = -1 ./ real(pGa);
 
+% Stabilità (poli con parte reale ≥ 0)
 if any(real(pG) >= 0)
     warning('G(s) non è asintoticamente stabile. Poli: %s', mat2str(pG));
 end
