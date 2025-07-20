@@ -16,24 +16,28 @@ mu_Ga = dcgain(Ga);
 tau_G = -1 ./ real(pG);
 tau_Ga = -1 ./ real(pGa);
 
+if any(real(pG) >= 0)
+    warning('G(s) non è asintoticamente stabile. Poli: %s', mat2str(pG));
+end
+if any(real(pGa) >= 0)
+    warning('Ga(s) non è asintoticamente stabile. Poli: %s', mat2str(pGa));
+end
+
+% Guadagno statico valido
+if any(isnan([mu_G mu_Ga])) || any(isinf([mu_G mu_Ga]))
+    error('Errore: guadagno statico indefinito (NaN o Inf).');
+end
+
 % Output
 disp('Sistema G(s):');
 fprintf('Guadagno: %.4f\n', mu_G);
 fprintf('Poli: %.4f\n', pG);
 fprintf('Costanti di tempo: %.4f\n', tau_G);
-%{
-disp(['Guadagno: ', num2str(mu_G)]);
-disp('Poli:'), disp(pG);
-disp('Costanti di tempo:'), disp(tau_G);
-%}
+
 
 fprintf('\n');
 disp('Sistema Ga(s):');
-%{
-disp(['Guadagno: ', num2str(mu_Ga)]);
-disp('Poli:'), disp(pGa);
-disp('Costanti di tempo:'), disp(tau_Ga);
-%}
+
 fprintf('Guadagno: %.4f\n', mu_Ga);
 fprintf('Poli: %.4f\n', pGa);
 fprintf('Costanti di tempo: %.4f\n', tau_Ga);
@@ -79,15 +83,6 @@ fprintf('\n');
 
 fprintf('Valore iniziale G(s): %.4f\n', yGa0);
 fprintf('Valore iniziale G(s): %.4f\n', yGa_inf);
-%{
-disp(['Valore iniziale G(s): ', num2str(yG0)]);
-disp(['Valore finale G(s): ', num2str(yG_inf)]);
-%}
-
-%{
-disp(['Valore iniziale Ga(s): ', num2str(yGa0)]);
-disp(['Valore finale Ga(s): ', num2str(yGa_inf)]);
-%}
 
 %indicare valore iniziale su grafico
 figure;
