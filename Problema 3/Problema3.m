@@ -1,4 +1,4 @@
-function calcolaCSD()
+function Problema3()
     % Esempio di immagine 10x10 binaria (0 = nero, 1 = bianco)
     img1 = randi([0 1], 10, 10);  % immagine casuale
     img2 = zeros(10,10); img2(3:7,3:7) = 1;  % pattern centrale bianco
@@ -10,18 +10,18 @@ function calcolaCSD()
         curimg = immagini{idx};
         disp(curimg);
 
+        % Visualizza l'immagine
+        figure; imshow(curimg, 'InitialMagnification', 'fit');
+        title(sprintf('Immagine %d', idx));
+
         csd = [0, 0];  % [bianco, nero]
 
         % Scorri l'immagine con finestra 3x3
         for r = 1:(size(curimg,1)-2)
             for c = 1:(size(curimg,2)-2)
                 window = curimg(r:r+2, c:c+2);
-                if any(window(:) == 1)
-                    csd(1) = csd(1) + 1; % bianco presente
-                end
-                if any(window(:) == 0)
-                    csd(2) = csd(2) + 1; % nero presente
-                end
+                csd(1) = csd(1) + any(window(:) == 1);
+                csd(2) = csd(2) + any(window(:) == 0);
             end
         end
 

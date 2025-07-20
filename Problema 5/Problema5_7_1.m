@@ -1,18 +1,11 @@
 function Problema5_7_1()
-    nome_file = input('\nInserisci il nome del file da utilizzare (es. dati3): ', 's');
-    if isempty(nome_file)
-        error('Nome del file non può essere vuoto.');
+    [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e var1');
+    if isequal(file, 0)
+        disp('Operazione annullata.');
+        return;
     end
 
-    if ~endsWith(nome_file, '.mat')
-        nome_file = [nome_file '.mat'];
-    end
-
-    if ~isfile(nome_file)
-        error('Il file "%s" non esiste nella directory corrente.', nome_file);
-    end
-
-    dati = load(nome_file);
+    dati = load(fullfile(folder, file));
     if ~isfield(dati, 'var1') || ~isfield(dati, 'time')
         error('Il file deve contenere le variabili "var1" e "time".');
     end

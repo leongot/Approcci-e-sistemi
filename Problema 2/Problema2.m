@@ -1,4 +1,4 @@
-function ConfusionMatrix()
+function Problema2()
     % Nomi delle classi
     classNames = {'Anger','Disgust','Fear','Happiness','Sadness','Surprise'};
     numClass = length(classNames);
