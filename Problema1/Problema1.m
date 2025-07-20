@@ -1,4 +1,4 @@
-function main_gesture_recognition()
+function Problema1()
     disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
 
     folder = uigetdir('C:\');
