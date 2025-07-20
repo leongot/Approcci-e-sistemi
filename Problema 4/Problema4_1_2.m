@@ -21,9 +21,10 @@ if strcmp(choice, 'Parametri numerici')
     h = str2double(answer{4});
     J = str2double(answer{5});
 
-    if any(isnan([R L k h J])) || L == 0 || J == 0
+    if any(isnan([R L k h J])) || L <= 0 || J <= 0
         error('Parametri non validi o nulli. Verifica i valori inseriti.');
     end
+    
 else
     % Simbolici
     syms R L k h J real
