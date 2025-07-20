@@ -1,20 +1,21 @@
 function Problema5_4()
-    %% --- PARTE 1: Selezione file da analizzare ---
-    fprintf('\nSeleziona il file da analizzare (es. dati5.mat o dati3.mat)\n');
+    %% Selezione file da analizzare
     [file, path] = uigetfile('*.mat', 'Seleziona un file contenente var1 e time');
+
     if isequal(file, 0)
-        disp('Operazione annullata. Uscita dalla funzione.');
+        disp('Operazione annullata.');
         return;
     end
 
     nome_file = fullfile(path, file);
     nome_file_dati3 = fullfile(path, 'dati3.mat');  % cerca dati3.mat nella stessa cartella
 
-    %% --- PARTE 2: Caricamento dati3.mat e calcolo min/max ---
+    %% Caricamento dati3.mat e calcolo min/max 
+    
     try
         [var1_dati3, ~] = carica_var1(nome_file_dati3);
-    catch ME
-        fprintf('Errore nel caricamento di dati3.mat: %s\n', ME.message);
+    catch e
+        fprintf('Errore nel caricamento di dati3.mat: %s\n', e.message);
         return;
     end
 
@@ -27,7 +28,7 @@ function Problema5_4()
     fprintf('Valore minimo di var1: %.3f\n', limite_min);
     fprintf('Valore massimo di var1: %.3f\n', limite_max);
 
-    %% --- PARTE 3: Caricamento file selezionato ---
+    %% Caricamento file selezionato
     try
         [var1, time] = carica_var1(nome_file);
     catch ME
@@ -35,7 +36,7 @@ function Problema5_4()
         return;
     end
 
-    %% --- PARTE 4: Inserimento soglie ---
+    %% Inserimento soglie
     scelta = input(['Vuoi usare i limiti calcolati da dati3.mat ' ...
         '(min: ' num2str(limite_min) ', max: ' num2str(limite_max) ')? (s/n): '], 's');
 
@@ -76,12 +77,12 @@ function Problema5_4()
         end
     end
 
-    %% --- PARTE 5: Analisi valori fuori soglia ---
+    %% Analisi valori fuori soglia
     fprintf('\n=== Rilevamento valori fuori soglia in %s ===\n', nome_file);
     rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superiore, isteresi_inferiore, isteresi_superiore);
 end
 
-%% --- Funzione per caricare var1 e time ---
+% Funzione per caricare var1 e time 
 function [var1, time] = carica_var1(nome_file)
     if ~isfile(nome_file)
         error('Il file %s non esiste.', nome_file);
@@ -97,12 +98,14 @@ function [var1, time] = carica_var1(nome_file)
     time = data.time;
 end
 
-%% --- Funzione per rilevare superamenti di soglia con isteresi ---
+% Funzione per rilevare superamenti di soglia con isteresi
 function rileva_superamento_limiti(var1, time, soglia_inf, soglia_sup, isteresi_inf, isteresi_sup)
-    attivazioni_sup = [];
-    disattivazioni_sup = [];
-    attivazioni_inf = [];
-    disattivazioni_inf = [];
+    % Preallocazione di vari array 
+    attivazioni_sup     = zeros(1, 5000);
+    disattivazioni_sup  = zeros(1, 5000);
+    attivazioni_inf     = zeros(1, 5000);
+    disattivazioni_inf  = zeros(1, 5000);
+    
     count = 0;
 
     allarme_sup = false;
@@ -143,27 +146,37 @@ function rileva_superamento_limiti(var1, time, soglia_inf, soglia_sup, isteresi_
         fprintf('\nTotale allarmi rilevati: %d\n', count);
     end
 
-    % --- Plot ---
-    figure;
-    plot(time, var1, '-k'); hold on;
-    title('Andamento var1 e Allarmi');
-    xlabel('Tempo'); ylabel('Valore var1');
-    grid on;
 
-    yline(soglia_sup, '--r', 'Soglia Sup');
-    yline(isteresi_sup, ':r', 'Isteresi Sup');
-    yline(soglia_inf, '--b', 'Soglia Inf');
-    yline(isteresi_inf, ':b', 'Isteresi Inf');
-
-    plot(time(attivazioni_sup), var1(attivazioni_sup), 'ro', 'MarkerFaceColor', 'r');
-    plot(time(disattivazioni_sup), var1(disattivazioni_sup), 'go', 'MarkerFaceColor', 'g');
-    plot(time(attivazioni_inf), var1(attivazioni_inf), 'bo', 'MarkerFaceColor', 'b');
-    plot(time(disattivazioni_inf), var1(disattivazioni_inf), 'yo', 'MarkerFaceColor', 'y');
-
-    legend('var1', ...
-        'Soglia Sup', 'Isteresi Sup', ...
-        'Soglia Inf', 'Isteresi Inf', ...
-        'Attivazione Sup', 'Disattivazione Sup', ...
-        'Attivazione Inf', 'Disattivazione Inf', ...
-        'Location', 'best');
+    % Visualizzazione del grafico opzinale
+    prompt = "Si desidera visualizzare il grafico? S/N: ";
+    txt = input(prompt, "s");
+    
+    if isempty(txt)
+        txt = 'N';
+    end
+    
+    if isequal(txt, 'S')
+        figure;
+        plot(time, var1, '-k'); hold on;
+        title('Andamento var1 e Allarmi');
+        xlabel('Tempo'); ylabel('Valore var1');
+        grid on;
+    
+        yline(soglia_sup, '--r', 'Soglia Sup');
+        yline(isteresi_sup, ':r', 'Isteresi Sup');
+        yline(soglia_inf, '--b', 'Soglia Inf');
+        yline(isteresi_inf, ':b', 'Isteresi Inf');
+    
+        plot(time(attivazioni_sup), var1(attivazioni_sup), 'ro', 'MarkerFaceColor', 'r');
+        plot(time(disattivazioni_sup), var1(disattivazioni_sup), 'go', 'MarkerFaceColor', 'g');
+        plot(time(attivazioni_inf), var1(attivazioni_inf), 'bo', 'MarkerFaceColor', 'b');
+        plot(time(disattivazioni_inf), var1(disattivazioni_inf), 'yo', 'MarkerFaceColor', 'y');
+    
+        legend('var1', ...
+            'Soglia Sup', 'Isteresi Sup', ...
+            'Soglia Inf', 'Isteresi Inf', ...
+            'Attivazione Sup', 'Disattivazione Sup', ...
+            'Attivazione Inf', 'Disattivazione Inf', ...
+            'Location', 'best');
+    end
 end

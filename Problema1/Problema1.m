@@ -1,7 +1,8 @@
 function Problema1()
     %disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
     
-    % L'utente deve selezione la cartella dove sono contenute le immagini
+    %% Lettura e allocazione delle immagini
+
     folder = uigetdir('*.png', 'Selezionare la cartella di immagini da analizzare');
     
     % Controlla se il path assegnato e' valido
@@ -9,7 +10,7 @@ function Problema1()
         error('Cartella non trovata: %s', folder);
     end
     
-    % Legge e alloca le immagini all'interno della cartella assegnata
+    % Legge e alloca le immagini
     images = dir(fullfile(folder, '*.png'));
     % Controlla se l'allocazione ha avuto successo
     if isempty(images)
@@ -17,6 +18,7 @@ function Problema1()
         return; 
     end
     
+    %% loop principale
     for i = 1:length(images)
         filename = fullfile(folder, images(i).name);
         img = imread(filename);
@@ -32,10 +34,8 @@ function Problema1()
             disp('Nessun oggetto rilevato.');
             continue;
         end
-        
-        % TODO: matlab estrae l'area come uno scalare, capire cosa
-        % rappresenta
-        fprintf('Area = %d\nCompatezza = %.2f\nSporgenza = %.2f\n', a, c, xp);
+     
+        fprintf('Area = %d pixels\nCompatezza = %.2f\nSporgenza = %.2f\n', a, c, xp);
         
         % Classificazione gesti con regole corrette
         gesture = GestureClassification(a, c, xp, imgDim);
@@ -44,32 +44,24 @@ function Problema1()
 end
 
 function [a, c, xp] = FeaturesExtraction(img)
-    % Ridimensiona mantenendo proporzioni, altezza a N pixel
-    %img = imresize(img, [N NaN]);
-
-    %if size(img,3) == 3 % ?
-    %    img = rgb2gray(img);
-    %end
-    
-    % Converte l'immagine nella scale di grigi
+    % Converte l'immagine nella scala di grigi
     % Necessario per la binarizzazione dell'immagine
     grayImg = rgb2gray(img);
 
-    % Binarizzazione e inversione se necessario
+    % Binarizzazione dell'immagine
     bwImg = imbinarize(grayImg);
-
-    %if mean(bw(:)) > 0.5
-    %    bw = ~bw;
-    %end
 
     % Pulizia immagine (apertura e riempimento)
     %img = imopen(img, strel('disk', 3));
     bwImg = imfill(bwImg, 'holes');
-    % Estae l'oggetto piu' grande nell'immagine
+    % Estrae l'oggetto piu' grande nell'immagine
     bwImg = bwareafilt(bwImg, 1); 
-
+    
+    % Estrae le caratteristiche dell'immagine necessarie per i calcoli
+    % successivi
     stats = regionprops(bwImg, 'Area', 'Perimeter', 'BoundingBox', 'Centroid', 'PixelList');
-
+    
+    % Controllo se le stastiche non siano vuote
     if isempty(stats)
         a   = 0;
         c   = 0;
@@ -79,13 +71,6 @@ function [a, c, xp] = FeaturesExtraction(img)
 
     a = stats.Area;
     p = stats.Perimeter;
-
-    if p == 0
-        a   = 0;
-        c   = 0;
-        xp  = 0;
-        return;
-    end
 
     % Calcolo compatezza
     c = 4 * pi * a / (p^2);

@@ -1,6 +1,6 @@
 function Problema5_3()
-    % Apertura finestra per selezione file .mat
-    fprintf("Seleziona un file da utilizzare (es: dati4.mat o dati3.mat")
+    %% Lettura e caricamento dei dati
+    % Selezione file tramite finestra
     [file, folder] = uigetfile('*.mat', 'Seleziona un file MAT contenente time e var1');
 
     if isequal(file, 0)
@@ -8,27 +8,29 @@ function Problema5_3()
         return;
     end
 
-    file_path = fullfile(folder, file);
+    % Caricamento dei dati
+    data = load(fullfile(folder, file));
 
-    % Verifica che il file contenga le variabili richieste
-    info = whos('-file', file_path);
-    variabili_presenti = {info.name};
-
-    if ~all(ismember({'time', 'var1'}, variabili_presenti))
-        fprintf('Il file "%s" NON contiene entrambe le variabili richieste: time e var1.\n', file);
-        return;
+    if ~all(ismember({'time', 'var1'}, fieldnames(data)))
+        error('Il file selezionato non contiene le variabili "time" e "var1".');
     end
 
-    % Caricamento dati
-    data = load(file_path);
+    %% Inizializzazione dei dati
     time = data.time;
     var1 = data.var1;
 
+    % Verifica consistenza delle dimensioni delle matrici
+    if size(time,1) ~= size(var1,1)
+        error('Dimensioni incompatibili tra time e matr1.');
+    end
+    
+    %% Ricerca di NaN
     % Ricerca dei NaN in var1
     ind_nan = find(isnan(var1));
     num_nan = numel(ind_nan);
+    
 
-    % Notifica risultato
+    %% Visualizzazione dei risultati
     if num_nan == 0
         fprintf('\n[%s] Nessun NaN rilevato in var1.\n', file);
     else
