@@ -1,5 +1,8 @@
 function Problema5_7()
-    %% Lettura e caricamento dei dati
+
+  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+  
+    % Lettura e caricamento dei dati
     [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e var1');
 
     if isequal(file, 0)

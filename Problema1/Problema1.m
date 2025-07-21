@@ -1,5 +1,6 @@
 function Problema1()
-    %disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
+
+    disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
     
     % L'utente deve selezione la cartella dove sono contenute le immagini
     folder = uigetdir('*.png', 'Selezionare la cartella di immagini da analizzare');
