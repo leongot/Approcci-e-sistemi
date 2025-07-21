@@ -1,5 +1,8 @@
 function Problema5_4()
-    %% Selezione file da analizzare
+
+  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+  
+    % Selezione file da analizzare
     [file, path] = uigetfile('*.mat', 'Seleziona un file contenente var1 e time');
 
     if isequal(file, 0)
@@ -10,7 +13,7 @@ function Problema5_4()
     nome_file = fullfile(path, file);
     nome_file_dati3 = fullfile(path, 'dati3.mat');  % cerca dati3.mat nella stessa cartella
 
-    %% Caricamento dati3.mat e calcolo min/max 
+    % Caricamento dati3.mat e calcolo min/max 
     
     try
         [var1_dati3, ~] = carica_var1(nome_file_dati3);
@@ -28,7 +31,7 @@ function Problema5_4()
     fprintf('Valore minimo di var1: %.3f\n', limite_min);
     fprintf('Valore massimo di var1: %.3f\n', limite_max);
 
-    %% Caricamento file selezionato
+    % Caricamento file selezionato
     try
         [var1, time] = carica_var1(nome_file);
     catch ME
@@ -36,7 +39,7 @@ function Problema5_4()
         return;
     end
 
-    %% Inserimento soglie
+    % Inserimento soglie
     scelta = input(['Vuoi usare i limiti calcolati da dati3.mat ' ...
         '(min: ' num2str(limite_min) ', max: ' num2str(limite_max) ')? (s/n): '], 's');
 
@@ -77,7 +80,7 @@ function Problema5_4()
         end
     end
 
-    %% Analisi valori fuori soglia
+    % Analisi valori fuori soglia
     fprintf('\n=== Rilevamento valori fuori soglia in %s ===\n', nome_file);
     rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superiore, isteresi_inferiore, isteresi_superiore);
 end

@@ -1,74 +1,141 @@
 function Problema5_7()
 
-nome_file = input('\nInserisci il nome del file da utilizzare (es. dati3): ', 's');
+  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+  
+    % Lettura e caricamento dei dati
+    [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e var1');
 
-  if ~endsWith(nome_file, '.mat')
-        nome_file = [nome_file '.mat'];
-  end
+    if isequal(file, 0)
+        disp('Operazione annullata.');
+        return;
+    end
 
- dati = load(nome_file);
+    dati = load(fullfile(folder, file));
+    if ~isfield(dati, 'var1') || ~isfield(dati, 'time')
+        error('Il file deve contenere le variabili "var1" e "time".');
+    end
+    
+    %% Inizializzazione dei dati
+    temp = dati.var1;
+    time = dati.time;
 
- temp = dati.var1;
- temp = double(temp);
- time = dati.time;
- ora = hour(time);
- giorni = unique(dateshift(time,'start','day'));
- num_giorni = numel(giorni);
- avg_temp = NaN(num_giorni,24);
- min_value = input('Inserisci valore minimo temperatura accettabile: ');
- max_value = input('Inserisci valore massimo temperatura accettabile: ');
- delta_t = seconds(diff(time));
- passo_regolare = [true; delta_t == 60];
- temp_var = diff(temp);
- var_velocity = temp_var ./ delta_t;
+    if ~isnumeric(temp) || ~isdatetime(time)
+        error('"var1" deve essere numerico e "time" deve essere datetime.');
+    end
 
- lim_pos = input('Inserisci limite positivo ROC (es. 0.5 °C/s): ');
- lim_neg = input('Inserisci limite negativo ROC (es. -0.5 °C/s): ');
- lim_freezing = input('Inserisci limite minimo per allarme di freezing (es. 0.01 °C/s): ');
+    if numel(temp) ~= numel(time)
+        error('Le dimensioni di "var1" e "time" non coincidono.');
+    end
 
-not_freezing = [true; abs(var_velocity) < lim_freezing];
-valid_velocity = [true; var_velocity < lim_pos & var_velocity > lim_neg];
-valid_values = ~isnan(temp) & ~isnat(time) & temp > min_value & temp < max_value...
-                          & passo_regolare & valid_velocity & not_freezing;
+    if any(diff(time) < seconds(0))
+        warning('I timestamp non sono ordinati. Verranno ordinati.');
+        [time, idx] = sort(time);
+        temp = temp(idx);
+    end
 
-fprintf('Totale dati: %d\n', numel(temp));
-fprintf('Dati validi: %d\n', sum(valid_values));
-fprintf('Percentuale validi: %.2f%%\n', 100 * sum(valid_values)/numel(temp));
+    temp = double(temp);
+    ora = hour(time);
+    giorni = unique(dateshift(time, 'start', 'day'));
+    num_giorni = numel(giorni);
+    avg_temp = NaN(num_giorni, 24);
 
-for g = 1:num_giorni
+    %% Input utente
+    min_value = ask_scalar('Inserisci valore minimo temperatura [-100, 100]: ', ...
+        @(v) v > -100 && v < 100);
+    max_value = ask_scalar(sprintf('Inserisci valore massimo temperatura (>%g e <200): ', min_value), ...
+        @(v) v > min_value && v < 200);
 
-    current_day = giorni(g);
-    indici_giorno = (dateshift(time, 'start', 'day') == current_day);
+    lim_pos = ask_scalar('Inserisci limite positivo ROC (>0): ', @(v) v > 0);
+    lim_neg = ask_scalar('Inserisci limite negativo ROC (<0): ', @(v) v < 0);
+    lim_freezing = ask_scalar('Inserisci limite freezing (>=0): ', @(v) v >= 0);
 
-    for h = 0:23
+    if lim_freezing > abs(lim_neg)
+        warning('Il limite di freezing (%.3f) è maggiore del valore assoluto del limite negativo ROC (%.3f).', ...
+            lim_freezing, lim_neg);
+    end
+    if lim_freezing > lim_pos
+        warning('Il limite di freezing (%.3f) è maggiore del limite positivo ROC (%.3f).', ...
+            lim_freezing, lim_pos);
+    end
+    if abs(lim_neg) > lim_pos
+        warning('Il limite negativo ROC (%.3f) ha valore assoluto maggiore del limite positivo ROC (%.3f).', ...
+            lim_neg, lim_pos);
+    end
+
+    %% Validazione dei dati
+    delta_t = seconds(diff(time));
+    passo_regolare = [true; abs(delta_t - 60) == 0];  %no tolleranza
+    temp_var = diff(temp);
+    var_velocity = temp_var ./ delta_t;
+
+    not_freezing = [true; abs(var_velocity) < lim_freezing];
+    valid_velocity = [true; var_velocity < lim_pos & var_velocity > lim_neg];
+    valid_values = ...
+        ~isnan(temp) & ~isnat(time) & ...
+        temp > min_value & temp < max_value & ...
+        passo_regolare & valid_velocity & not_freezing;
+
+    fprintf('Totale dati: %d\n', numel(temp));
+    fprintf('Dati validi: %d\n', sum(valid_values));
+    fprintf('Percentuale validi: %.2f%%\n', 100 * sum(valid_values) / numel(temp));
+    
+    %% Calcolo del valore medio
+    for g = 1:num_giorni
+        current_day = giorni(g);
+        indici_giorno = (dateshift(time, 'start', 'day') == current_day);
+
+        for h = 0:23
             indici_ora = (ora == h);
-            % seleziona i valori che sono sia nel giorno che nell'ora
             indici_finali = indici_giorno & indici_ora & valid_values;
-            % se ci sono dati validi, calcola la media
-
             if any(indici_finali)
-                avg_temp(g, h+1) = round(mean(temp(indici_finali)),2);  % h+1 perché indice MATLAB parte da 1
+                avg_temp(g, h+1) = round(mean(temp(indici_finali)), 2);
             end
-
-   end
+        end
+    end
+    
+    %% Visualizzazione dei dati
+    giorni_str = string(giorni);
+    tabella_risultati = array2table( ...
+        avg_temp, ...
+        'RowNames', giorni_str, ...
+        'VariableNames', strcat("h", string(0:23)));
+    disp(tabella_risultati);
+    
+    % Visualizzazione del grafico opzionale
+    prompt = "Si desidera visualizzare il grafico? Y/N: ";
+    txt = input(prompt, "s");
+    
+    if isempty(txt)
+        txt = 'N';
+    end
+    
+    if isequal(txt, 'Y')
+        figure;
+        heatmap( ...
+            string(giorni), ...
+            string(0:23), ...
+            round(avg_temp', 2), ...
+            'Colormap', parula, ...
+            'ColorLimits', [min(avg_temp(:)), max(avg_temp(:))], ...
+            'MissingDataColor', [1 1 1], ...
+            'MissingDataLabel', 'Dati mancanti');
+        
+        title('Temperatura media oraria');
+        xlabel('Giorno');
+        ylabel('Ora del giorno');
+     end
 end
 
-giorni_str = string(giorni);
-tabella_risultati = array2table(avg_temp, 'RowNames', giorni_str, ...
-    'VariableNames', strcat("h", string(0:23)));
-disp(tabella_risultati);
-figure;
-heatmap( ...
-    string(giorni), ...               % Giorni sull'asse X
-    string(0:23), ...                 % Ore sull'asse Y
-    round(avg_temp', 2), ...          % Trasposizione + arrotondamento a 2 decimali
-    'Colormap', parula, ...
-    'ColorLimits', [min(avg_temp(:)), max(avg_temp(:))], ...
-    'MissingDataColor', [1 1 1], ...  % Colore bianco per i NaN
-    'MissingDataLabel', 'Dati mancanti');
-
-title('Temperatura media oraria');
-xlabel('Giorno');
-ylabel('Ora del giorno');
-
+% Funzione di supporto per input convalidato
+function val = ask_scalar(prompt, validator)
+tentativi = 0;
+    while true
+        val = input(prompt);
+        tentativi = tentativi + 1;
+        if isempty(val) || ~isnumeric(val) || ~isscalar(val) || ~validator(val)
+            fprintf(2, 'Input non valido. Riprova.\n');
+        else
+            break;
+        end
+    end
 end

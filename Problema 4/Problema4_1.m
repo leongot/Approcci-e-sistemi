@@ -43,16 +43,16 @@ C = eye(2);
 D = zeros(2);
 I = eye(2);
 
-% === Polinomio caratteristico φ(s) ===
+% Polinomio caratteristico φ(s)
 phi = simplify(det(s*I - A));
 
-% === Funzione di trasferimento matriciale ===
+% Funzione di trasferimento matriciale 
 G = simplify(C * inv(s*I - A) * B + D);
 
-% === Numeratore simbolico N(s) = φ(s) * G(s) ===
+% Numeratore simbolico N(s) = φ(s) * G(s)
 N = simplify(phi * G);
 
-% --- Visualizzazione migliorata ---
+%  visualizzazione command window
 
 fprintf('\n==============================\n');
 fprintf(' POLINOMIO CARATTERISTICO φ(s)\n');

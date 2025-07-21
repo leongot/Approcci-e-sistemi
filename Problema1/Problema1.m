@@ -1,100 +1,127 @@
 function Problema1()
-    disp('DEMO realizzata da: NOME COGNOME, NOME COGNOME');
 
-    folder = uigetdir('C:\');
-
+    disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+    
+    % L'utente deve selezione la cartella dove sono contenute le immagini
+    folder = uigetdir('*.png', 'Selezionare la cartella di immagini da analizzare');
+    
+    % Controlla se il path assegnato e' valido
     if exist(folder, 'dir') ~= 7
         error('Cartella non trovata: %s', folder);
     end
-
-    files = dir(fullfile(folder, '*.png'));
-    if isempty(files)
-        disp('Nessun file PNG trovato.');
-        return;
+    
+    % Legge e alloca le immagini all'interno della cartella assegnata
+    images = dir(fullfile(folder, '*.png'));
+    % Controlla se l'allocazione ha avuto successo
+    if isempty(images)
+        disp('Nessun file png trovato.');
+        return; 
     end
-
-    for i = 1:length(files)
-        filename = fullfile(folder, files(i).name);
+    
+    for i = 1:length(images)
+        filename = fullfile(folder, images(i).name);
         img = imread(filename);
-        fprintf('\nAnalisi immagine: %s\n', files(i).name);
+        imgInfo = imfinfo(filename);
+        imgDim = imgInfo.Width * imgInfo.Height;
 
-        % Calcola N per questa immagine (10% dell'altezza originale)
-        N = round(size(img, 1) * 0.1);
+        fprintf('\nAnalisi immagine: %s\n', images(i).name);
 
-        % Ridimensiona l'immagine per calcolare la soglia
-        img_resized = imresize(img, [N NaN]);         % ridimensiona in altezza a N, mantieni proporzioni
-        [~, new_width] = size(rgb2gray(img_resized)); % larghezza dell'immagine ridotta (in scala di grigi)
-        soglia_area = 0.1 * N * new_width;            % calcolo soglia area
-
-        % Estrai le feature usando immagine originale ma ridimensionata internamente
-        [area, compat, x_p] = estrai_feature(img, N);
-
-        if isempty(area)
+        % Estrazione feature
+        [a, c, xp] = FeaturesExtraction(img);
+        
+        if isempty(a)
             disp('Nessun oggetto rilevato.');
             continue;
         end
-
-        fprintf('Area = %d, Compat = %.2f, Protrusion_ratio = %.2f\n', area, compat, x_p);
-
-        % Classifica gesto
-        gesto = classifica_gesto(area, compat, x_p, soglia_area);
-        fprintf('Gesto riconosciuto: %s\n', gesto);
+        
+        % TODO: matlab estrae l'area come uno scalare, capire cosa
+        % rappresenta
+        fprintf('Area = %d\nCompatezza = %.2f\nSporgenza = %.2f\n', a, c, xp);
+        
+        % Classificazione gesti con regole corrette
+        gesture = GestureClassification(a, c, xp, imgDim);
+        fprintf('Gesto riconosciuto: %s\n', gesture);
     end
 end
 
-function [area, compat, x_p] = estrai_feature(img, N)
-    % Ridimensiona immagine per elaborazione
-    img = imresize(img, [N NaN]);
+function [a, c, xp] = FeaturesExtraction(img)
+    % Ridimensiona mantenendo proporzioni, altezza a N pixel
+    %img = imresize(img, [N NaN]);
 
-    % Converti in grayscale se RGB
-    if size(img, 3) == 3
-        img = rgb2gray(img);
-    end
+    %if size(img,3) == 3 % ?
+    %    img = rgb2gray(img);
+    %end
+    
+    % Converte l'immagine nella scale di grigi
+    % Necessario per la binarizzazione dell'immagine
+    grayImg = rgb2gray(img);
 
-    % Binarizzazione
-    bw = imbinarize(img);
-    if mean(bw(:)) > 0.5
-        bw = ~bw;
-    end
+    % Binarizzazione e inversione se necessario
+    bwImg = imbinarize(grayImg);
 
-    % Pulizia morfologica
-    bw = imopen(bw, strel('disk', 3));
-    bw = imfill(bw, 'holes');
-    bw = bwareafilt(bw, 1); % Prendi l'oggetto più grande
+    %if mean(bw(:)) > 0.5
+    %    bw = ~bw;
+    %end
 
-    stats = regionprops(bw, 'Area', 'Perimeter', 'Centroid', 'PixelList');
+    % Pulizia immagine (apertura e riempimento)
+    %img = imopen(img, strel('disk', 3));
+    bwImg = imfill(bwImg, 'holes');
+    % Estae l'oggetto piu' grande nell'immagine
+    bwImg = bwareafilt(bwImg, 1); 
+
+    stats = regionprops(bwImg, 'Area', 'Perimeter', 'BoundingBox', 'Centroid', 'PixelList');
 
     if isempty(stats)
-        area = [];
-        compat = [];
-        x_p = [];
+        a   = 0;
+        c   = 0;
+        xp  = 0;
         return;
     end
 
-    area = stats.Area;
-    per = stats.Perimeter;
+    a = stats.Area;
+    p = stats.Perimeter;
 
-    if per == 0
-        area = [];
-        compat = [];
-        x_p = [];
+    if p == 0
+        a   = 0;
+        c   = 0;
+        xp  = 0;
         return;
     end
 
-    % Compattezza
-    compat = 4 * pi * area / (per^2);
+    % Calcolo compatezza
+    c = 4 * pi * a / (p^2);
 
-    % Protrusion ratio
-    x_coords = stats.PixelList(:,1);
-    x_min = min(x_coords);
-    x_max = max(x_coords);
-    x_cog = stats.Centroid(1);
+    % Calcolo protrusion ratio
+    pixelList = stats.PixelList;
+    
+    xCoords = pixelList(:,1);
+    xMin = min(xCoords);
+    xMax = max(xCoords);
+    xCog = stats.Centroid(1);
 
-    denom = x_cog - x_min;
-    if denom == 0
-        x_p = Inf;
+    denom = xCog - xMin;
+    if denom == 0 % Protezione contro divisioni per zero
+        xp = Inf; 
     else
-        x_p = (x_max - x_cog) / denom;
+        xp = (xMax - xCog) / denom;
+    end
+end
+
+function gesture = GestureClassification(a, c, xp, imgDim)
+
+    if a < (0.1 * imgDim)
+        gesture = 'empty';
+        return;
+    end
+
+    if c < 0.25
+        gesture = 'stop';
+    elseif xp > 1.2
+        gesture = 'right';
+    elseif 1/xp > 1.2
+        gesture = 'left';
+    else
+        gesture = 'idle';
     end
 end
 

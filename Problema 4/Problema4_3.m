@@ -9,6 +9,7 @@ if ~isfield(simOut, 'y_Ga') || ~isfield(simOut, 'u_step')
     error(['Il file Simulink non contiene i segnali ' ...
            'y_Ga e/o u_step. Verifica il modello Simulink.']);
 end
+
 % Estrai i dati da 'simOut'
 y = simOut.y_Ga;        % risposta del sistema (uscita)
 u = simOut.u_step;      % segnale di ingresso (scalino)

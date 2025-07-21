@@ -1,4 +1,7 @@
 function Problema5_6()
+
+  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+
     [file, folder] = uigetfile('*.mat', 'Selezione un file .mat con time e var1.');
     if isequal(file, 0)
         disp('Operazione annullata.');
