@@ -125,6 +125,7 @@ end
 
 % Funzione di supporto per input convalidato
 function val = ask_scalar(prompt, validator)
+tentativi = 0;
     while true
         val = input(prompt);
         tentativi = tentativi + 1;
