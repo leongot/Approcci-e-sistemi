@@ -19,9 +19,6 @@ function Problema5_8()
         error('Le dimensioni di "time" e "matr1" devono essere compatibili.');
     end
 
-    % Individua righe con almeno un NaN in matr1
-    righe_con_nan = any(isnan(matr1), 2);
-
     % Calcolo media istantanea (ignora NaN)
     media_istantanea = mean(matr1, 2, 'omitnan');
 
@@ -39,7 +36,7 @@ function Problema5_8()
     delta_media = [NaN; diff(media_istantanea)];
 
     % Inizializzazione segnalazioni
-    idx_nan = righe_con_nan;
+    idx_nan = any(isnan(matr1), 2); % Individua righe con almeno un NaN in matr1
     idx_roc = abs(delta_media) > soglia_roc;
     idx_roc(isnan(delta_media)) = false; % ignora i NaN
     idx_freeze = abs(delta_media) < soglia_freezing;
@@ -48,7 +45,7 @@ function Problema5_8()
 
     % Colonna flag anomalie
     Anomalia = strings(size(time));
-    
+
     for i = 1:length(time)
         flag = [];
         if idx_nan(i)
@@ -68,9 +65,11 @@ function Problema5_8()
     end
     
     % Tabella risultati con colonna "Anomalia"
-    T = table(time, media_istantanea, Anomalia, ...
+    T = table( ...
+        time, ...
+        media_istantanea, ...
+        Anomalia, ...
         'VariableNames', {'Timestamp', 'Media_Temp', 'Anomalia'});
-    
     disp('Temperatura media istantanea (aritmetica) con anomalie:');
     disp(T);
 
@@ -78,16 +77,16 @@ function Problema5_8()
     % Segnalazioni testuali
     fprintf('\n--- SEGNALAZIONI ---');
     if any(idx_nan)
-        fprintf('\n%d righe con almeno un NaN rilevate in matr1 (evidenziate nel grafico tramite croci rosse).', sum(idx_nan));
+        fprintf('\n%d righe con almeno un NaN rilevate in matr1 (evidenziate nel grafico tramite croci rosse).\n', sum(idx_nan));
     end
     if any(idx_roc)
-        fprintf('\n%d salti anomali rilevati (>|%.2f| °C, evidenziati tramite quadrati arancioni).', sum(idx_roc), soglia_roc);
+        fprintf('\n%d salti anomali rilevati (>|%.2f| °C, evidenziati tramite quadrati arancioni).\n', sum(idx_roc), soglia_roc);
     end
     if any(idx_freezing_blocchi)
-        fprintf('\n%d freezing rilevati (media invariata per almeno 2 istanti, evidenziati da cerchi blu).', sum(idx_freezing_blocchi));
+        fprintf('\n%d freezing rilevati (media invariata per almeno 2 istanti, evidenziati da cerchi blu).\n', sum(idx_freezing_blocchi));
     end
     if ~any(idx_nan | idx_roc | idx_freezing_blocchi)
-        fprintf('Nessuna anomalia rilevata.');
+        fprintf('Nessuna anomalia rilevata.\n');
     end
 
     % Grafico con segnalazioni

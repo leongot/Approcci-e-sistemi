@@ -111,7 +111,7 @@ function Problema5_1()
     disp(T);
     
     % Visualizzazione del grafico opzionale
-    prompt = "Si desidera visualizzare il grafico? Y/N: ";
+    prompt = "Si desidera visualizzare il grafico? S/N: ";
     txt = input(prompt, "s");
     
     if isempty(txt)

@@ -93,14 +93,14 @@ function Problema5_5()
     %{
     % Grafico opzionale
     % ROC + soglie + allarmi
-    prompt = "Si desidera visualizzare il grafico? Y/N: ";
+    prompt = "Si desidera visualizzare il grafico? S/N: ";
     txt = input(prompt, "s");
     
     if isempty(txt)
         txt = 'N';
     end
     
-    if isequal(txt, 'Y')
+    if isequal(txt, 'S')
         figure;
         plot(time(2:end), ROC, 'k', 'DisplayName', 'ROC'); hold on;
         yline(ROCPositiveLim, '--r', 'Limite + utente', 'DisplayName', 'Limite + utente');
