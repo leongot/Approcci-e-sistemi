@@ -103,42 +103,48 @@ function Problema5_5()
         end
     end
     
-    %{
+    
     % Grafico opzionale
     % ROC + soglie + allarmi
-    prompt = "Si desidera visualizzare il grafico? Y/N: ";
-    txt = input(prompt, "s");
-    
-    if isempty(txt)
-        txt = 'N';
+
+    while (true)
+        choice = input("Si desidera visualizzare il grafico? S/N: ", "s");
+        
+        if isequal(upper(choice), 'N')
+            disp('Chiusura programma...');
+            return
+        elseif isequal(upper(choice), 'S')
+            figure;
+            plot(time(2:end), ROC, 'k', 'DisplayName', 'ROC'); hold on;
+            yline(ROCPositiveLim, '--r', 'Limite + utente', 'DisplayName', 'Limite + utente');
+            yline(ROCNegativeLim, '--b', 'Limite - utente', 'DisplayName', 'Limite - utente');
+        
+            if exist('d3_dmax', 'var')
+                yline(d3_dmax, ':r', 'Limite + dati3', 'DisplayName', 'Limite + dati3');
+                yline(d3_dmin, ':b', 'Limite - dati3', 'DisplayName', 'Limite - dati3');
+            end
+        
+            % Evidenzia punti di allarme (utente)
+            if ~isempty(user_ids)
+                plot(time(user_ids + 1), ROC(user_ids), 'ro', 'DisplayName', 'Allarmi utente');
+            end
+        
+            % Evidenzia punti di allarme (dati3)
+            if exist('auto_ids', 'var') && ~isempty(auto_ids)
+                plot(time(auto_ids + 1), ROC(auto_ids), 'bx', 'DisplayName', 'Allarmi dati3');
+            end
+        
+            xlabel('Tempo');
+            ylabel('ROC [°C/s]');
+            title('Velocità di variazione var1 (ROC) e superamenti soglie');
+            legend('Location', 'best');
+            grid on;
+
+            return;
+
+        else
+            disp("Input non valido. Inserire 'S' per sì o 'N' per no.")
+        end
     end
-    
-    if isequal(txt, 'Y')
-        figure;
-        plot(time(2:end), ROC, 'k', 'DisplayName', 'ROC'); hold on;
-        yline(ROCPositiveLim, '--r', 'Limite + utente', 'DisplayName', 'Limite + utente');
-        yline(ROCNegativeLim, '--b', 'Limite - utente', 'DisplayName', 'Limite - utente');
-    
-        if exist('d3_dmax', 'var')
-            yline(d3_dmax, ':r', 'Limite + dati3', 'DisplayName', 'Limite + dati3');
-            yline(d3_dmin, ':b', 'Limite - dati3', 'DisplayName', 'Limite - dati3');
-        end
-    
-        % Evidenzia punti di allarme (utente)
-        if ~isempty(user_ids)
-            plot(time(user_ids + 1), ROC(user_ids), 'ro', 'DisplayName', 'Allarmi utente');
-        end
-    
-        % Evidenzia punti di allarme (dati3)
-        if exist('auto_ids', 'var') && ~isempty(auto_ids)
-            plot(time(auto_ids + 1), ROC(auto_ids), 'bx', 'DisplayName', 'Allarmi dati3');
-        end
-    
-        xlabel('Tempo');
-        ylabel('ROC [°C/s]');
-        title('Velocità di variazione var1 (ROC) e superamenti soglie');
-        legend('Location', 'best');
-        grid on;
-    end
-    %}
-end
+
+%Riaggiunta la scelta del grafico con upperscaling dell'input dell'utente nel caso inserisse 's' nella scelta di volerlo vedere o meno
