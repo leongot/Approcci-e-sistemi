@@ -1,4 +1,4 @@
-function Problema5_7_1()
+function Problema5_7()
     %% Lettura e caricamento dei dati
     [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e var1');
 
