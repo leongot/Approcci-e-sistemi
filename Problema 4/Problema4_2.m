@@ -47,7 +47,7 @@ fprintf('Costanti di tempo: %.4f\n', tau_Ga);
 t = 0:0.001:0.5;
 u = ones(size(t));  % scalino unitario
 
-% Risposte
+% Risposte allo scalino unitario
 yG = lsim(G, u, t);
 yGa = lsim(Ga, u, t);
 
@@ -76,6 +76,7 @@ yGa_inf = yGa(end);
 
 %Per sistemi stabili, soggetti a ingressi costanti, il valore di regime coincide con il guadagno statico
 %Se il sistema è asintoticamente stabile, allora: Valore finale = Valore di regime
+
 fprintf('\n');
 disp('Valori finali e iniziali');
 fprintf('Valore iniziale G(s): %.4f\n', yG0);
@@ -96,8 +97,7 @@ legend('G(s)', 'Ga(s)', 'y(0) G(s)');
 title('Risposta con valore iniziale evidenziato');
 
 
-% Tempo normalizzato e uscita normalizzata (replica linea azzurra slide 16)
-% - risposta normalizzata
+% Tempo normalizzato e risposta normalizzata (replica linea azzurra slide 16)
 t_norm = t / tau_Ga;
 y_norm = yGa / mu_Ga;
 
@@ -111,6 +111,7 @@ grid on;
 % tempo salita Ts per Ga(s)
 Ts_Ga = 2.2 * tau_Ga;
 fprintf('\n');
+
 % disp(['Tempo di salita Ts per Ga(s): ', num2str(Ts_Ga), ' s']);
 fprintf('Tempo di salita Ts per Ga(s): %.4f\n', Ts_Ga);
 
