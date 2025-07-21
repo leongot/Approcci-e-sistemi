@@ -33,7 +33,7 @@ function Problema5_5()
         error('Il limite negativo deve essere un numero scalare minore di 0.');
     end
 
-    if ROCPositiveLim <= ROCNegaiveLim
+    if ROCPositiveLim <= ROCNegativeLim
         error('Il limite positivo deve essere maggiore di quello negativo.');
     end
 
