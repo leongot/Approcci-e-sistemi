@@ -25,6 +25,19 @@ function Problema5_5()
     ROCPositiveLim = input('Inserisci limite positivo ROC (es. 0.5 °C/s): ');
     ROCNegativeLim = input('Inserisci limite negativo ROC (es. -0.5 °C/s): ');
 
+    if ~isscalar(ROCPositiveLim) || ~isnumeric(ROCPositiveLim) || isnan(ROCPositiveLim) || ROCPositiveLim <= 0
+        error('Il limite positivo deve essere un numero scalare maggiore di 0.');
+    end
+    
+    if ~isscalar(ROCNegaiveLim) || ~isnumeric(ROCNegaiveLim) || isnan(ROCNegaiveLim) || ROCNegaiveLim >= 0
+        error('Il limite negativo deve essere un numero scalare minore di 0.');
+    end
+
+    if ROCPositiveLim <= ROCNegaiveLim
+        error('Il limite positivo deve essere maggiore di quello negativo.');
+    end
+
+
     %% Rilevamento allarmi 
     % Utilizzando i limiti forniti dall'utente
     user_warnings = strings(length(ROC), 1);
