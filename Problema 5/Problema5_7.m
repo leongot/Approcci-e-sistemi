@@ -61,7 +61,7 @@ function Problema5_7()
 
     %% Validazione dei dati
     delta_t = seconds(diff(time));
-    passo_regolare = [true; abs(delta_t - 60) <= 1];  % tolleranza ±1s
+    passo_regolare = [true; abs(delta_t - 60) == 0];  %no tolleranza
     temp_var = diff(temp);
     var_velocity = temp_var ./ delta_t;
 
