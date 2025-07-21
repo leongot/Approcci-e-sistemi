@@ -29,7 +29,7 @@ function Problema5_5()
         error('Il limite positivo deve essere un numero scalare maggiore di 0.');
     end
     
-    if ~isscalar(ROCNegaiveLim) || ~isnumeric(ROCNegaiveLim) || isnan(ROCNegaiveLim) || ROCNegaiveLim >= 0
+    if ~isscalar(ROCNegativeLim) || ~isnumeric(ROCNegativeLim) || isnan(ROCNegativeLim) || ROCNegativeLim >= 0
         error('Il limite negativo deve essere un numero scalare minore di 0.');
     end
 
