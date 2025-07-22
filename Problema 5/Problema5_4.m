@@ -49,8 +49,8 @@ function Problema5_4()
     end
 
     %% Input utente
-    scelta = input(['Vuoi usare i limiti calcolati da dati3.mat ' ...
-        '(min: ' num2str(limite_min) ', max: ' num2str(limite_max) ')? (s/n): '], 's');
+    scelta = input_testo_valido(['Vuoi usare i limiti calcolati da dati3.mat ' ...
+    '(min: ' num2str(limite_min) ', max: ' num2str(limite_max) ')? (s/n): ']);
 
     if strcmpi(scelta, 's')
         soglia_inferiore = limite_min;
@@ -218,6 +218,17 @@ function val = input_valido(prompt)
             break;
         else
             disp('Valore non valido. Inserisci un numero.');
+        end
+    end
+end
+
+function val = input_testo_valido(prompt)
+    while true
+        val = input(prompt, 's');
+        if any(strcmpi(val, {'s','n'}))
+            break;
+        else
+            disp("Input non valido. Inserire 's' per sì o 'n' per no.");
         end
     end
 end
