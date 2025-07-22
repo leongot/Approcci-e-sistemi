@@ -109,7 +109,6 @@ function Problema5_5()
     
     % Grafico opzionale
     % ROC + soglie + allarmi
-
     while (true)
         choice = input("Si desidera visualizzare il grafico? S/N: ", "s");
         
@@ -149,5 +148,3 @@ function Problema5_5()
             disp("Input non valido. Inserire 'S' per sì o 'N' per no.")
         end
     end
-
-%Riaggiunta la scelta del grafico con upperscaling dell'input dell'utente nel caso inserisse 's' nella scelta di volerlo vedere o meno

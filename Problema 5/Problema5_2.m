@@ -20,7 +20,7 @@ function Problema5_2()
     
      % Inizializzazione dei dati
     time = data.time; % Nel caso di questo problema solo il tempo e' di interesse
-
+    
     % Calcolo del delta temporale
     dt = diff(time);
     % Conversione in secondi per facilitare i calcoli
@@ -33,6 +33,7 @@ function Problema5_2()
     % Ricerca di passi di campionamento non costanti
     %ref = scegli_passo_riferimento(dt_seconds, toll);
     diff_abs = abs(dt_seconds - ref);
+    %diff_abs = abs(dt - ref);
     tipo_anomalia = strings(length(dt_seconds),1);
 
     for i=1:length(dt_seconds)
