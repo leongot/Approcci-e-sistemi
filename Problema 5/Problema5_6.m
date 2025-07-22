@@ -56,7 +56,7 @@ function Problema5_6()
     legend('ROC', 'Freezing rilevati', 'Limiti freezing');
 
 
-
+    %{
     % Test anche con dati3.mat
     try
         [d3_var1, d3_time] = carica_var1_con_path('dati3.mat');
@@ -104,4 +104,5 @@ function [var1, time] = carica_var1_con_path(nome_file)
 
     var1 = data.var1;
     time = data.time;
+    %}
 end
