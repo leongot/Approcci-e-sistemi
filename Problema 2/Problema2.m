@@ -33,7 +33,7 @@ function Problema2()
         diag([50 50 25 65 50 48])
     };
     
-     % Controllo che ci siano matrici da analizzare
+    % Controllo che ci siano matrici da analizzare
     if isempty(matrices)
         error('Nessuna matrice di confusione disponibile per l''analisi.');
     end
@@ -57,7 +57,7 @@ function Problema2()
             'RowNames', classNames) ...
         );
 
-          % Calcolo dei tassi di riconoscimento per classe
+        % Calcolo dei tassi di riconoscimento per classe
         accuracies = zeros(1, numClass);
         for rri = 1:numClass
             total = sum(confusionMatrix(rri,:));
