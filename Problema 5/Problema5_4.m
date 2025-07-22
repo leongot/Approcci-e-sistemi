@@ -49,18 +49,17 @@ function Problema5_4()
         soglia_superiore = limite_max;
 
         while true
-            isteresi_inferiore = input('Inserisci la soglia di isteresi inferiore: ');
-            isteresi_superiore = input('Inserisci la soglia di isteresi superiore: ');
+            isteresi_inferiore = input('Inserisci il limite di attenzione basso: ');
+            isteresi_superiore = input('Inserisci il limite di attenzione alto: ');
 
             if soglia_inferiore < isteresi_inferiore && ...
                isteresi_inferiore < isteresi_superiore && ...
                isteresi_superiore < soglia_superiore
-
                 fprintf('Soglie coerenti. Usati limiti da dati3.mat\n');
                 break;
             else
                 fprintf('Soglie incoerenti: assicurati che\n');
-                fprintf('- soglia_inferiore < isteresi_inferiore < isteresi_superiore < soglia_superiore\n');
+                fprintf('- Limite sicurezza basso < Limite attenzione basso < Limite attenzione alto < Limite sicurezza alto\n');
                 fprintf('Riprova.\n\n');
             end
         end
@@ -79,7 +78,7 @@ function Problema5_4()
                 break;
             else
                 fprintf('Soglie incoerenti: assicurati che\n');
-                fprintf('- soglia_inferiore < isteresi_inferiore < isteresi_superiore < soglia_superiore\n');
+                fprintf('- Limite sicurezza basso < Limite attenzione basso < Limite attenzione alto < Limite sicurezza alto\n');
                 fprintf('Riprova.\n\n');
             end
         end
