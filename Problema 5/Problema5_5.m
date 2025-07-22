@@ -20,9 +20,7 @@ function Problema5_5()
     time = data.time;
     var1 = data.var1;
 
-    dt = seconds(diff(time));
-    dv = diff(var1);
-    ROC = dv ./ dt;
+    ROC = diff(var1) ./ seconds(diff(time));
     
     maxROC = max(ROC);
     minROC = min(ROC);
