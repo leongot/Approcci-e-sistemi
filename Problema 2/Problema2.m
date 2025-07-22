@@ -33,12 +33,23 @@ function Problema2()
         diag([50 50 25 65 50 48])
     };
     
+     % Controllo che ci siano matrici da analizzare
+    if isempty(matrices)
+        error('Nessuna matrice di confusione disponibile per l''analisi.');
+    end
 
     %% Analisi di ogni matrice
     for m = 1:length(matrices)
         confusionMatrix = matrices{m};
 
-        fprintf('\n===== MATRICE %c =====\n', 'A' + (m - 1));
+        % Controllo che la matrice sia quadrata e di dimensione corretta
+        [rows, cols] = size(confusionMatrix);
+        if rows ~= numClass || cols ~= numClass
+            error('La matrice %c non ha dimensioni coerenti con le classi (%d x %d richiesto).', ...
+                'A' + (m - 1), numClass, numClass);
+        end
+
+        fprintf('\n MATRICE %c \n', 'A' + (m - 1));
         disp( ...
             array2table( ...
             confusionMatrix, ...
@@ -46,12 +57,17 @@ function Problema2()
             'RowNames', classNames) ...
         );
 
-        % Calcolo dei tassi di riconoscimento per classe
+          % Calcolo dei tassi di riconoscimento per classe
         accuracies = zeros(1, numClass);
         for rri = 1:numClass
-            truePositive = confusionMatrix(rri,rri);
             total = sum(confusionMatrix(rri,:));
-            accuracies(rri) = (truePositive / total) * 100;
+            if total == 0
+                warning('Classe "%s" ha zero esempi: accuracy impostata a 0.', classNames{rri});
+                accuracies(rri) = 0;
+            else
+                truePositive = confusionMatrix(rri,rri);
+                accuracies(rri) = (truePositive / total) * 100;
+            end
         end
 
         % Calcolo del tasso medio
