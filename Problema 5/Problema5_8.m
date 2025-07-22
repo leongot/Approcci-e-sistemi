@@ -1,6 +1,6 @@
 function Problema5_8()
 
-  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+    fprintf('\nDEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno\n');
   
     % Lettura e caricamento dei dati
     [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e matr1');
@@ -35,7 +35,9 @@ function Problema5_8()
         soglia_freezing = 1e-3;
     end
 
-    % Calcolo variazione (ROC) tra istanti
+    % Calcolo variazione della temperatue media per instante 
+    % Il primo viene posto NaN per evitare per operazioni con valori
+    % inesistenti
     delta_media = [NaN; diff(media_istantanea)];
 
     % Inizializzazione segnalazioni

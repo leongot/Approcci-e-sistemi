@@ -59,9 +59,9 @@ fprintf(' POLINOMIO CARATTERISTICO φ(s)\n');
 fprintf('==============================\n\n');
 disp(char(phi));
 
-fprintf('\n==============================\n');
+fprintf('\n======================================\n');
 fprintf(' MATRICE FUNZIONE DI TRASFERIMENTO G(s)\n');
-fprintf('==============================\n\n');
+fprintf('=======================================\n\n');
 
 [nr, nc] = size(G);
 for i=1:nr

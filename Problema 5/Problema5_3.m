@@ -1,8 +1,8 @@
 function Problema5_3()
 
-  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+    fprintf('\nDEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno\n');
   
-    % Lettura e caricamento dei dati
+    %% Lettura e caricamento dei dati
     % Selezione file tramite finestra
     [file, folder] = uigetfile('*.mat', 'Seleziona un file MAT contenente time e var1');
 
@@ -18,7 +18,7 @@ function Problema5_3()
         error('Il file selezionato non contiene le variabili "time" e "var1".');
     end
 
-    % Inizializzazione dei dati
+    %% Inizializzazione dei dati
     time = data.time;
     var1 = data.var1;
 
@@ -27,17 +27,15 @@ function Problema5_3()
         error('Dimensioni incompatibili tra time e matr1.');
     end
     
-    % Ricerca di NaN
-    % Ricerca dei NaN in var1
+    %% Ricerca di valori NaN
     ind_nan = find(isnan(var1));
-    num_nan = numel(ind_nan);
-    
+    %num_nan = numel(ind_nan);
 
-    % Visualizzazione dei risultati
-    if num_nan == 0
-        fprintf('\n[%s] Nessun NaN rilevato in var1.\n', file);
+    %% Visualizzazione dei risultati
+    if isempty(ind_nan)
+        fprintf('\n[%s] Nessun NaN rilevato.\n', file);
     else
-        fprintf('\n[%s] Rilevati %d valori NaN in var1:\n\n', file, num_nan);
+        fprintf('\n[%s] Rilevati %d valori NaN:\n\n', file, numel(ind_nan));
 
         % Costruzione tabella con indice e timestamp
         T = table( ...

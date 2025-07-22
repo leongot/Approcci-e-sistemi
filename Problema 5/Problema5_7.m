@@ -1,8 +1,8 @@
 function Problema5_7()
 
-  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+    fprintf('\nDEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno\n');
   
-    % Lettura e caricamento dei dati
+    %% Lettura e caricamento dei dati
     [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e var1');
 
     if isequal(file, 0)
@@ -11,6 +11,7 @@ function Problema5_7()
     end
 
     dati = load(fullfile(folder, file));
+    
     if ~isfield(dati, 'var1') || ~isfield(dati, 'time')
         error('Il file deve contenere le variabili "var1" e "time".');
     end
@@ -102,14 +103,14 @@ function Problema5_7()
     disp(tabella_risultati);
     
     % Visualizzazione del grafico opzionale
-    prompt = "Si desidera visualizzare il grafico? Y/N: ";
+    prompt = "Si desidera visualizzare il grafico? S/N: ";
     txt = input(prompt, "s");
     
-    if isempty(txt)
+    if isempty(txt) || ~isequal(txt, 'N') || ~isequal(txt, 'S')
         txt = 'N';
     end
     
-    if isequal(txt, 'Y')
+    if isequal(txt, 'S')
         figure;
         heatmap( ...
             string(giorni), ...

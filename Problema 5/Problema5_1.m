@@ -1,8 +1,8 @@
 function Problema5_1()
 
-  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
-
-    % Lettura e caricamento dei dati
+    fprintf('\nDEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno\n');
+    
+    %% Lettura e caricamento dei dati
     % Selezione file tramite interfaccia
     [file, folder] = uigetfile('*.mat', 'Seleziona un file contenente time e matr1');
     % Controlla se un file e' stato selezionato
@@ -28,8 +28,8 @@ function Problema5_1()
     
     %% Input utente
     % Mostra intervallo disponibile
-    fprintf('Intervallo disponibile: %s a %s\n', string(time(1)), string(time(end)));
-    fprintf('Formato richiesto: gg-MMM-aaaa HH:mm (es. 12-Sep-2023 14:00)\n');
+    fprintf('\nIntervallo disponibile: %s a %s\n', string(time(1)), string(time(end)));
+    fprintf('Formato richiesto: gg-MMM-aaaa HH:mm (es. 12-Sep-2023 14:00)\n\n');
     
     % Vengono utilizzati un serie di loop per assicurasi che l'utente
     % inserisca un valore valido
@@ -80,33 +80,29 @@ function Problema5_1()
     end
 
     % Scelta colonne da visualizzare
-    fprintf('Sono disponibili %d sensori (colonne da 1 a %d).\n', size(matr1,2), size(matr1,2));
-    cols = input('Inserisci le colonne da visualizzare (es. [1 3]): ', 's');
+    fprintf('\nSono disponibili %d sensori (colonne da 1 a %d).\n', size(matr1,2), size(matr1,2));
+    
+    cols = [];
+    prompt = 'Inserisci le colonne da visualizzare (es. [1 3]): ';
 
-    while true
-        %{
-        if strcmpi(cols, 'leave')
-            disp('Uscita richiesta. Funzione interrotta.');
-            return;
-        end
-        %}
+    while isempty(cols) || any(cols < 1) || any(cols > size(matr1,2))
+        cols = input(prompt);
 
-        cols_num = str2double(cols);
-        cols_num = sort(cols_num);
-        if isempty(cols_num) || any(cols_num < 1) || any(cols_num > size(matr1,2))
-            cols = input('Vettore non valido. Inserisci di nuovo (es. [1 3]): ', 's');
-        else
+        if any(cols >= 1) || any(cols <= size(matr1,2))
+            sort(cols);
             break;
         end
+
+        disp('Input non valido. Inserisci di nuovo (es. [1 3]): ')
     end
     
     %% Visualizzazione dei dati
     % Estrazione e visualizzazione dati
-    matr_selected = matr1(idx, cols_num);
+    matr_selected = matr1(idx, cols);
 
     % Mostra tabella dei dati
     T = array2table(matr_selected, ...
-        'VariableNames', arrayfun(@(c) sprintf('Sensore_%d', c), cols_num, 'UniformOutput', false));
+        'VariableNames', arrayfun(@(c) sprintf('Sensore %d', c), cols, 'UniformOutput', false));
     T.Tempo = time_selected;
     T = movevars(T, 'Tempo', 'Before', 1);
 
@@ -117,17 +113,17 @@ function Problema5_1()
     prompt = "Si desidera visualizzare il grafico? S/N: ";
     txt = input(prompt, "s");
     
-    if isempty(txt)
+    if isempty(txt) || ~isequal(txt, 'N') || ~isequal(txt, 'S')
         txt = 'N';
     end
 
-    if isequal(txt, 'Y')
+    if isequal(txt, 'S')
         figure;
         plot(time_selected, matr_selected, 'LineWidth', 1.5);
         xlabel('Tempo');
         ylabel('Temperatura [°C]');
         title('Temperature rilevate dai sensori selezionati');
-        legend(arrayfun(@(c) sprintf('Sensore %d', c), cols_num, 'UniformOutput', false));
+        legend(arrayfun(@(c) sprintf('Sensore %d', c), cols, 'UniformOutput', false));
         grid on;
     end   
 end

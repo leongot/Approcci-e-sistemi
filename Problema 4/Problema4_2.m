@@ -1,4 +1,4 @@
-%calcolo guadagno, poli, zeri e costanti di tempo
+clear; clc;
 
 % Sistemi
 G = tf(3.98, conv([0.0856 1], [0.0022 1]));

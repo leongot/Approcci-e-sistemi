@@ -45,13 +45,6 @@ function Problema1()
 end
 
 function [a, c, xp] = FeaturesExtraction(img)
-    % Ridimensiona mantenendo proporzioni, altezza a N pixel
-    %img = imresize(img, [N NaN]);
-
-    %if size(img,3) == 3 % ?
-    %    img = rgb2gray(img);
-    %end
-    
     % Converte l'immagine nella scale di grigi
     % Necessario per la binarizzazione dell'immagine
     grayImg = rgb2gray(img);
@@ -59,12 +52,7 @@ function [a, c, xp] = FeaturesExtraction(img)
     % Binarizzazione e inversione se necessario
     bwImg = imbinarize(grayImg);
 
-    %if mean(bw(:)) > 0.5
-    %    bw = ~bw;
-    %end
-
-    % Pulizia immagine (apertura e riempimento)
-    %img = imopen(img, strel('disk', 3));
+    % Pulizia immagine
     bwImg = imfill(bwImg, 'holes');
     % Estae l'oggetto piu' grande nell'immagine
     bwImg = bwareafilt(bwImg, 1); 
@@ -122,22 +110,5 @@ function gesture = GestureClassification(a, c, xp, imgDim)
         gesture = 'left';
     else
         gesture = 'idle';
-    end
-end
-
-function gesto = classifica_gesto(area, compat, x_p, soglia_area)
-    if area < soglia_area
-        gesto = 'empty';
-        return;
-    end
-
-    if compat < 0.25
-        gesto = 'stop';
-    elseif x_p > 1.2
-        gesto = 'right';
-    elseif 1/x_p > 1.2
-        gesto = 'left';
-    else
-        gesto = 'idle';
     end
 end

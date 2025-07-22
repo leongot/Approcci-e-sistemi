@@ -1,8 +1,8 @@
 function Problema5_5()
 
-  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
+    fprintf('\nDEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno\n');
   
-    % Lettura e caricamento dei dati
+    %% Lettura e caricamento dei dati
     [file, folder] = uigetfile('*.mat', 'Seleziona un file .mat con time e var1');
 
     if isequal(file, 0)
@@ -23,11 +23,44 @@ function Problema5_5()
     dt = seconds(diff(time));
     dv = diff(var1);
     ROC = dv ./ dt;
+    
+    maxROC = max(ROC);
+    minROC = min(ROC);
 
     %% Input utente
-    ROCPositiveLim = input('Inserisci limite positivo ROC (es. 0.5 °C/s): ');
-    ROCNegativeLim = input('Inserisci limite negativo ROC (es. -0.5 °C/s): ');
+    
+    fprintf('\nROC(Rate of Change) massimo rilevato: %.6f\n', maxROC);
+    fprintf('ROC(Rate of Change) minimo rilevato: %.6f\n\n', minROC);
+   
+    ROCPositiveLim = 0;
+    ROCNegativeLim = 0;
 
+    %ROCPositiveLim = input('Inserisci limite positivo ROC (es. 0.5 °C/s): ');
+    %ROCNegativeLim = input('Inserisci limite negativo ROC (es. -0.5 °C/s): ');
+    
+    while true
+        ROCPositiveLim = input('Inserisci limite positivo ROC: ');
+
+        if (isscalar(ROCPositiveLim) && ~isnan(ROCPositiveLim) && ROCPositiveLim > 0 && ROCPositiveLim <= maxROC)
+            break;
+        end
+
+        disp('Inserisci un valore valido');
+    end
+
+    fprintf('\n');
+
+    while true
+        ROCNegativeLim = input('Inserisci limite negativo ROC: ');
+
+        if (isscalar(ROCPositiveLim) && ~isnan(ROCPositiveLim) && ROCNegativeLim < 0 && ROCNegativeLim >= minROC)
+            break;
+        end
+
+        disp('Inserisci un valore valido');
+    end
+    
+    %{
     if ~isscalar(ROCPositiveLim) || ~isnumeric(ROCPositiveLim) || isnan(ROCPositiveLim) || ROCPositiveLim <= 0
         error('Il limite positivo deve essere un numero scalare maggiore di 0.');
     end
@@ -39,6 +72,7 @@ function Problema5_5()
     if ROCPositiveLim <= ROCNegativeLim
         error('Il limite positivo deve essere maggiore di quello negativo.');
     end
+    %}
 
 
     %% Rilevamento allarmi 
@@ -109,7 +143,7 @@ function Problema5_5()
     
     % Grafico opzionale
     % ROC + soglie + allarmi
-    while (true)
+    while true
         choice = input("Si desidera visualizzare il grafico? S/N: ", "s");
         
         if isequal(upper(choice), 'N')

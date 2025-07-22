@@ -1,22 +1,23 @@
 function Problema5_4()
 
-  disp('DEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno');
-  
+    fprintf('\nDEMO realizzata da: Leonardo Gottani, Nicola Olivieri, Emanuele Bruno\n');
+
+    %% Lettura e caricamento dei dati
     % Selezione file da analizzare
-    [file, path] = uigetfile('*.mat', 'Seleziona un file contenente var1 e time');
+    [file, folder] = uigetfile('*.mat', 'Seleziona un file contenente var1 e time');
 
     if isequal(file, 0)
         disp('Operazione annullata.');
         return;
     end
 
-    nome_file = fullfile(path, file);
-    nome_file_dati3 = fullfile(path, 'dati3.mat');  % cerca dati3.mat nella stessa cartella
+    nome_file = fullfile(folder, file);
+    nome_file_dati3 = fullfile(folder, 'dati3.mat');  % cerca dati3.mat nella stessa cartella
 
     % Caricamento dati3.mat e calcolo min/max 
     
     try
-        [var1_dati3, ~] = carica_var1(nome_file_dati3);
+        [var1_dati3, ~] = carica_dati(nome_file_dati3);
     catch e
         fprintf('Errore nel caricamento di dati3.mat: %s\n', e.message);
         return;
@@ -33,13 +34,13 @@ function Problema5_4()
 
     % Caricamento file selezionato
     try
-        [var1, time] = carica_var1(nome_file);
+        [var1, time] = carica_dati(nome_file);
     catch ME
         fprintf('Errore nel caricamento di %s: %s\n', nome_file, ME.message);
         return;
     end
 
-    % Inserimento soglie
+    %% Input utente
     scelta = input(['Vuoi usare i limiti calcolati da dati3.mat ' ...
         '(min: ' num2str(limite_min) ', max: ' num2str(limite_max) ')? (s/n): '], 's');
 
@@ -80,13 +81,13 @@ function Problema5_4()
         end
     end
 
-    % Analisi valori fuori soglia
+    %% Analisi valori
     fprintf('\n=== Rilevamento valori fuori soglia in %s ===\n', nome_file);
     rileva_superamento_limiti(var1, time, soglia_inferiore, soglia_superiore, isteresi_inferiore, isteresi_superiore);
 end
 
 % Funzione per caricare var1 e time 
-function [var1, time] = carica_var1(nome_file)
+function [var1, time] = carica_dati(nome_file)
     if ~isfile(nome_file)
         error('Il file %s non esiste.', nome_file);
     end
@@ -154,7 +155,7 @@ function rileva_superamento_limiti(var1, time, soglia_inf, soglia_sup, isteresi_
     prompt = "Si desidera visualizzare il grafico? S/N: ";
     txt = input(prompt, "s");
     
-    if isempty(txt)
+    if isempty(txt) || ~isequal(txt, 'N') || ~isequal(txt, 'S')
         txt = 'N';
     end
     
