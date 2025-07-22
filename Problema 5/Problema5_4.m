@@ -152,35 +152,39 @@ function rileva_superamento_limiti(var1, time, soglia_inf, soglia_sup, isteresi_
 
 
     % Visualizzazione del grafico opzinale
-    prompt = "Si desidera visualizzare il grafico? S/N: ";
-    txt = input(prompt, "s");
+    while true
+        choice = input("Si desidera visualizzare il grafico? S/N: ", "s");
     
-    if isempty(txt) || ~isequal(txt, 'N') || ~isequal(txt, 'S')
-        txt = 'N';
-    end
-    
-    if isequal(txt, 'S')
-        figure;
-        plot(time, var1, '-k'); hold on;
-        title('Andamento var1 e Allarmi');
-        xlabel('Tempo'); ylabel('Valore var1');
-        grid on;
-    
-        yline(soglia_sup, '--r', 'Soglia Sup');
-        yline(isteresi_sup, ':r', 'Isteresi Sup');
-        yline(soglia_inf, '--b', 'Soglia Inf');
-        yline(isteresi_inf, ':b', 'Isteresi Inf');
-    
-        plot(time(attivazioni_sup), var1(attivazioni_sup), 'ro', 'MarkerFaceColor', 'r');
-        plot(time(disattivazioni_sup), var1(disattivazioni_sup), 'go', 'MarkerFaceColor', 'g');
-        plot(time(attivazioni_inf), var1(attivazioni_inf), 'bo', 'MarkerFaceColor', 'b');
-        plot(time(disattivazioni_inf), var1(disattivazioni_inf), 'yo', 'MarkerFaceColor', 'y');
-    
-        legend('var1', ...
-            'Soglia Sup', 'Isteresi Sup', ...
-            'Soglia Inf', 'Isteresi Inf', ...
-            'Attivazione Sup', 'Disattivazione Sup', ...
-            'Attivazione Inf', 'Disattivazione Inf', ...
-            'Location', 'best');
+        if isequal(upper(choice), 'N')
+            disp('Chiusura programma...');
+            return
+        elseif isequal(upper(choice), 'S')
+            figure;
+            plot(time, var1, '-k'); hold on;
+            title('Andamento var1 e Allarmi');
+            xlabel('Tempo'); ylabel('Valore var1');
+            grid on;
+        
+            yline(soglia_sup, '--r', 'Soglia Sup');
+            yline(isteresi_sup, ':r', 'Isteresi Sup');
+            yline(soglia_inf, '--b', 'Soglia Inf');
+            yline(isteresi_inf, ':b', 'Isteresi Inf');
+        
+            plot(time(attivazioni_sup), var1(attivazioni_sup), 'ro', 'MarkerFaceColor', 'r');
+            plot(time(disattivazioni_sup), var1(disattivazioni_sup), 'go', 'MarkerFaceColor', 'g');
+            plot(time(attivazioni_inf), var1(attivazioni_inf), 'bo', 'MarkerFaceColor', 'b');
+            plot(time(disattivazioni_inf), var1(disattivazioni_inf), 'yo', 'MarkerFaceColor', 'y');
+        
+            legend('var1', ...
+                'Soglia Sup', 'Isteresi Sup', ...
+                'Soglia Inf', 'Isteresi Inf', ...
+                'Attivazione Sup', 'Disattivazione Sup', ...
+                'Attivazione Inf', 'Disattivazione Inf', ...
+                'Location', 'best');
+
+            return
+        else
+            disp("Input non valido. Inserire 'S' per sì o 'N' per no.")
+        end
     end
 end

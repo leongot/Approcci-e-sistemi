@@ -50,27 +50,30 @@ function Problema5_6()
 
     % Grafico opzionale
     
-    prompt = "Si desidera visualizzare il grafico? S/N: ";
-    txt = input(prompt, "s");
-    
-    if isempty(txt) || ~isequal(txt, 'N') || ~isequal(txt, 'S')
-        txt = 'N';
-    end
-
-    if isequal(txt, 'S')
-        figure;
-        plot(time(2:end), ROC, '-k'); hold on;
+    while true
+        choice = input("Si desidera visualizzare il grafico? S/N: ", "s");
         
-        % Segnalo freezing rilevati
-        plot(time(warningsId + 1), ROC(warningsId), 'bo', 'MarkerFaceColor', 'b');
-        
-        % Aggiungo linee di riferimento per i limiti freezing
-        yline(freezingLimit, '--r', 'Limite Freezing (+)');
-        yline(-freezingLimit, '--r', 'Limite Freezing (-)');
-        
-        xlabel('Tempo'); ylabel('ROC [°C/s]');
-        title('Rate of Change e Freezing'); 
-        grid on;
-        legend('ROC', 'Freezing rilevati', 'Limiti freezing');
+        if isequal(upper(choice), 'N')
+                disp('Chiusura programma...');
+               return
+        elseif isequal(upper(choice), 'S')
+            figure;
+            plot(time(2:end), ROC, '-k'); hold on;
+            
+            % Segnalo freezing rilevati
+            plot(time(warningsId + 1), ROC(warningsId), 'bo', 'MarkerFaceColor', 'b');
+            
+            % Aggiungo linee di riferimento per i limiti freezing
+            yline(freezingLimit, '--r', 'Limite Freezing (+)');
+            yline(-freezingLimit, '--r', 'Limite Freezing (-)');
+            
+            xlabel('Tempo'); ylabel('ROC [°C/s]');
+            title('Rate of Change e Freezing'); 
+            grid on;
+            legend('ROC', 'Freezing rilevati', 'Limiti freezing');
+            return
+        else
+            disp("Input non valido. Inserire 'S' per sì o 'N' per no.")
+        end
     end
 end

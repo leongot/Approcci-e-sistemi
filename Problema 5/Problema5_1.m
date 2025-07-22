@@ -110,20 +110,23 @@ function Problema5_1()
     disp(T);
     
     % Visualizzazione del grafico opzionale
-    prompt = "Si desidera visualizzare il grafico? S/N: ";
-    txt = input(prompt, "s");
-    
-    if isempty(txt) || ~isequal(txt, 'N') || ~isequal(txt, 'S')
-        txt = 'N';
+    while true
+        choice = input("Si desidera visualizzare il grafico? S/N: ", "s");
+        
+        if isequal(upper(choice), 'N')
+            disp('Chiusura programma...');
+            return
+        elseif isequal(upper(choice), 'S')
+            figure;
+            plot(time_selected, matr_selected, 'LineWidth', 1.5);
+            xlabel('Tempo');
+            ylabel('Temperatura [°C]');
+            title('Temperature rilevate dai sensori selezionati');
+            legend(arrayfun(@(c) sprintf('Sensore %d', c), cols, 'UniformOutput', false));
+            grid on;
+            return
+        else
+            disp("Input non valido. Inserire 'S' per sì o 'N' per no.")
+        end
     end
-
-    if isequal(txt, 'S')
-        figure;
-        plot(time_selected, matr_selected, 'LineWidth', 1.5);
-        xlabel('Tempo');
-        ylabel('Temperatura [°C]');
-        title('Temperature rilevate dai sensori selezionati');
-        legend(arrayfun(@(c) sprintf('Sensore %d', c), cols, 'UniformOutput', false));
-        grid on;
-    end   
 end

@@ -103,28 +103,31 @@ function Problema5_7()
     disp(tabella_risultati);
     
     % Visualizzazione del grafico opzionale
-    prompt = "Si desidera visualizzare il grafico? S/N: ";
-    txt = input(prompt, "s");
-    
-    if isempty(txt) || ~isequal(txt, 'N') || ~isequal(txt, 'S')
-        txt = 'N';
-    end
-    
-    if isequal(txt, 'S')
-        figure;
-        heatmap( ...
-            string(giorni), ...
-            string(0:23), ...
-            round(avg_temp', 2), ...
-            'Colormap', parula, ...
-            'ColorLimits', [min(avg_temp(:)), max(avg_temp(:))], ...
-            'MissingDataColor', [1 1 1], ...
-            'MissingDataLabel', 'Dati mancanti');
+    while true
+        choice = input("Si desidera visualizzare il grafico? S/N: ", "s");
         
-        title('Temperatura media oraria');
-        xlabel('Giorno');
-        ylabel('Ora del giorno');
-     end
+        if isequal(upper(choice), 'N')
+            disp('Chiusura programma...');
+            return        
+        elseif isequal(upper(choice), 'S')
+            figure;
+            heatmap( ...
+                string(giorni), ...
+                string(0:23), ...
+                round(avg_temp', 2), ...
+                'Colormap', parula, ...
+                'ColorLimits', [min(avg_temp(:)), max(avg_temp(:))], ...
+                'MissingDataColor', [1 1 1], ...
+                'MissingDataLabel', 'Dati mancanti');
+            
+            title('Temperatura media oraria');
+            xlabel('Giorno');
+            ylabel('Ora del giorno');
+            return
+        else
+            disp("Input non valido. Inserire 'S' per sì o 'N' per no.")
+        end
+    end
 end
 
 % Funzione di supporto per input convalidato
