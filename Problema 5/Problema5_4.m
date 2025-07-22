@@ -40,6 +40,14 @@ function Problema5_4()
         return;
     end
 
+    if length(var1) ~= length(time)
+        error('Le variabili "var1" e "time" devono avere la stessa lunghezza.');
+    end
+
+    if isempty(var1)
+        error('Il vettore var1 è vuoto.');
+    end
+
     %% Input utente
     scelta = input(['Vuoi usare i limiti calcolati da dati3.mat ' ...
         '(min: ' num2str(limite_min) ', max: ' num2str(limite_max) ')? (s/n): '], 's');
@@ -49,13 +57,13 @@ function Problema5_4()
         soglia_superiore = limite_max;
 
         while true
-            isteresi_inferiore = input('Inserisci il limite di attenzione basso: ');
-            isteresi_superiore = input('Inserisci il limite di attenzione alto: ');
+            isteresi_inferiore = input_valido('Inserisci il limite di attenzione basso: ');
+            isteresi_superiore = input_valido('Inserisci il limite di attenzione alto: ');
 
             if soglia_inferiore < isteresi_inferiore && ...
                isteresi_inferiore < isteresi_superiore && ...
                isteresi_superiore < soglia_superiore
-                fprintf('Soglie coerenti. Usati limiti da dati3.mat\n');
+                fprintf('Soglie coerenti. Sono stati usati i limiti min/max ricavati da dati3.mat\n');
                 break;
             else
                 fprintf('Soglie incoerenti: assicurati che\n');
@@ -65,10 +73,10 @@ function Problema5_4()
         end
     else
         while true
-            soglia_inferiore = input('Inserisci il livello di sicurezza basso: ');
-            isteresi_inferiore = input('Inserisci il livello di attenzione basso: ');
-            soglia_superiore = input('Inserisci il livello di sicurezza alto: ');
-            isteresi_superiore = input('Inserisci il livello di attenzione alto: ');
+            soglia_inferiore = input_valido('Inserisci il livello di sicurezza basso: ');
+            isteresi_inferiore = input_valido('Inserisci il livello di attenzione basso: ');
+            soglia_superiore = input_valido('Inserisci il livello di sicurezza alto: ');
+            isteresi_superiore = input_valido('Inserisci il livello di attenzione alto: ');
 
             if soglia_inferiore < isteresi_inferiore && ...
                isteresi_inferiore < isteresi_superiore && ...
@@ -107,6 +115,11 @@ end
 
 % Funzione per rilevare superamenti di soglia con isteresi
 function rileva_superamento_limiti(var1, time, soglia_inf, soglia_sup, isteresi_inf, isteresi_sup)
+
+    if isempty(var1)
+        disp('Il vettore var1 è vuoto. Nessuna analisi effettuata.');
+        return;
+    end
 
     % Conversione robusta del tempo in datetime
     if ~isdatetime(time)
@@ -197,3 +210,14 @@ function rileva_superamento_limiti(var1, time, soglia_inf, soglia_sup, isteresi_
     end
 end
 
+% Funzione di input sicuro
+function val = input_valido(prompt)
+    while true
+        val = input(prompt);
+        if ~isempty(val) && isnumeric(val)
+            break;
+        else
+            disp('Valore non valido. Inserisci un numero.');
+        end
+    end
+end
